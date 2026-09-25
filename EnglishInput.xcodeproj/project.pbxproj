@@ -1,0 +1,136 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000010000000000000001 /* AIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000001 /* AIModels.swift */; };
+		A10000010000000000000002 /* AISettingsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000002 /* AISettingsRepository.swift */; };
+		A10000010000000000000003 /* HTTPCorrectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000003 /* HTTPCorrectionService.swift */; };
+		A10000010000000000000004 /* KeychainAPIKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000004 /* KeychainAPIKeyStore.swift */; };
+		A10000010000000000000005 /* SentenceTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000005 /* SentenceTracker.swift */; };
+		A10000010000000000000006 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000020 /* Security.framework */; };
+		A10000010000000000000007 /* EnglishInputApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000020000000000000001 /* EnglishInputApp.swift */; };
+		A10000010000000000000008 /* SettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000020000000000000002 /* SettingsModel.swift */; };
+		A10000010000000000000009 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000020000000000000003 /* SettingsView.swift */; };
+		A1000001000000000000000A /* EnglishInputCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000021 /* EnglishInputCore.framework */; };
+		A1000001000000000000000B /* EnglishInputCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000021 /* EnglishInputCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A1000001000000000000000C /* EnglishInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000030000000000000001 /* EnglishInputController.swift */; };
+			A10000010000000000000012 /* CorrectionSuggestionPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000030000000000000004 /* CorrectionSuggestionPanel.swift */; };
+		A1000001000000000000000D /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000030000000000000002 /* main.swift */; };
+		A1000001000000000000000E /* EnglishInputCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000021 /* EnglishInputCore.framework */; };
+		A1000001000000000000000F /* EnglishInputCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000021 /* EnglishInputCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A10000010000000000000010 /* SentenceTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000040000000000000001 /* SentenceTrackerTests.swift */; };
+		A10000010000000000000011 /* EnglishInputCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000021 /* EnglishInputCore.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A20000000000000000000001 /* EnglishInput.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = wrapper.pb-project; name = EnglishInput.xcodeproj; path = EnglishInput.xcodeproj; sourceTree = "<group>"; };
+		A20000010000000000000001 /* AIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIModels.swift; sourceTree = "<group>"; };
+		A20000010000000000000002 /* AISettingsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AISettingsRepository.swift; sourceTree = "<group>"; };
+		A20000010000000000000003 /* HTTPCorrectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPCorrectionService.swift; sourceTree = "<group>"; };
+		A20000010000000000000004 /* KeychainAPIKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainAPIKeyStore.swift; sourceTree = "<group>"; };
+		A20000010000000000000005 /* SentenceTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentenceTracker.swift; sourceTree = "<group>"; };
+		A20000010000000000000006 /* EnglishInputCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EnglishInputCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20000010000000000000007 /* EnglishInputApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EnglishInputApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20000010000000000000008 /* EnglishInputMethod.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EnglishInputMethod.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20000010000000000000009 /* EnglishInputTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EnglishInputTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20000010000000000000020 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		A20000010000000000000021 /* EnglishInputCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EnglishInputCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20000020000000000000001 /* EnglishInputApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnglishInputApp.swift; sourceTree = "<group>"; };
+		A20000020000000000000002 /* SettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModel.swift; sourceTree = "<group>"; };
+		A20000020000000000000003 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A20000020000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A20000030000000000000001 /* EnglishInputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnglishInputController.swift; sourceTree = "<group>"; };
+			A20000030000000000000004 /* CorrectionSuggestionPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorrectionSuggestionPanel.swift; sourceTree = "<group>"; };
+		A20000030000000000000002 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		A20000030000000000000003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A20000040000000000000001 /* SentenceTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentenceTrackerTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A30000010000000000000001 /* EnglishInputCore Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (A10000010000000000000006, ); runOnlyForDeploymentPostprocessing = 0; };
+		A30000010000000000000002 /* EnglishInputApp Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (A1000001000000000000000A, ); runOnlyForDeploymentPostprocessing = 0; };
+		A30000010000000000000003 /* EnglishInputMethod Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (A1000001000000000000000E, ); runOnlyForDeploymentPostprocessing = 0; };
+		A30000010000000000000004 /* EnglishInputTests Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (A10000010000000000000011, ); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A40000000000000000000001 = {isa = PBXGroup; children = (A40000010000000000000001, A40000020000000000000001, A40000030000000000000001, A40000040000000000000001, A40000050000000000000001, A40000060000000000000001, ); sourceTree = "<group>"; };
+		A40000010000000000000001 /* EnglishInputCore */ = {isa = PBXGroup; children = (A20000010000000000000001, A20000010000000000000002, A20000010000000000000003, A20000010000000000000004, A20000010000000000000005, ); path = Packages/EnglishInputCore; sourceTree = "<group>"; };
+		A40000020000000000000001 /* EnglishInputApp */ = {isa = PBXGroup; children = (A20000020000000000000001, A20000020000000000000002, A20000020000000000000003, A20000020000000000000004, ); path = EnglishInputApp; sourceTree = "<group>"; };
+		A40000030000000000000001 /* EnglishInputMethod */ = {isa = PBXGroup; children = (A20000030000000000000001, A20000030000000000000002, A20000030000000000000003, A20000030000000000000004, ); path = EnglishInputMethod; sourceTree = "<group>"; };
+		A40000040000000000000001 /* Tests */ = {isa = PBXGroup; children = (A20000040000000000000001, ); path = Tests; sourceTree = "<group>"; };
+		A40000050000000000000001 /* Products */ = {isa = PBXGroup; children = (A20000010000000000000006, A20000010000000000000007, A20000010000000000000008, A20000010000000000000009, ); name = Products; sourceTree = "<group>"; };
+		A40000060000000000000001 /* Frameworks */ = {isa = PBXGroup; children = (A20000010000000000000020, ); name = Frameworks; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A50000010000000000000001 /* EnglishInputCore */ = {isa = PBXNativeTarget; buildConfigurationList = A60000010000000000000001; buildPhases = (A30000010000000000000001, A70000010000000000000001, ); buildRules = (); dependencies = (); name = EnglishInputCore; productName = EnglishInputCore; productReference = A20000010000000000000006; productType = "com.apple.product-type.framework"; };
+		A50000010000000000000002 /* EnglishInputApp */ = {isa = PBXNativeTarget; buildConfigurationList = A60000010000000000000002; buildPhases = (A30000010000000000000002, A70000010000000000000002, A80000010000000000000001, ); buildRules = (); dependencies = (A90000010000000000000001, ); name = EnglishInputApp; productName = EnglishInputApp; productReference = A20000010000000000000007; productType = "com.apple.product-type.application"; };
+		A50000010000000000000003 /* EnglishInputMethod */ = {isa = PBXNativeTarget; buildConfigurationList = A60000010000000000000003; buildPhases = (A30000010000000000000003, A70000010000000000000003, A80000010000000000000002, ); buildRules = (); dependencies = (A90000010000000000000002, ); name = EnglishInputMethod; productName = EnglishInputMethod; productReference = A20000010000000000000008; productType = "com.apple.product-type.application"; };
+		A50000010000000000000004 /* EnglishInputTests */ = {isa = PBXNativeTarget; buildConfigurationList = A60000010000000000000004; buildPhases = (A30000010000000000000004, A70000010000000000000004, ); buildRules = (); dependencies = (A90000010000000000000003, ); name = EnglishInputTests; productName = EnglishInputTests; productReference = A20000010000000000000009; productType = "com.apple.product-type.bundle.unit-test"; };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A00000000000000000000001 /* Project object */ = {isa = PBXProject; attributes = {LastUpgradeCheck = 2700; ORGANIZATIONNAME = "English Input"; TargetAttributes = {A50000010000000000000001 = {CreatedOnToolsVersion = 27.0; }; A50000010000000000000002 = {CreatedOnToolsVersion = 27.0; }; A50000010000000000000003 = {CreatedOnToolsVersion = 27.0; }; A50000010000000000000004 = {CreatedOnToolsVersion = 27.0; TestTargetID = A50000010000000000000002; }; }; }; buildConfigurationList = A60000000000000000000001; compatibilityVersion = "Xcode 15.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base, ); mainGroup = A40000000000000000000001; productRefGroup = A40000050000000000000001; projectDirPath = ""; projectRoot = ""; targets = (A50000010000000000000001, A50000010000000000000002, A50000010000000000000003, A50000010000000000000004, ); };
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A80000010000000000000001 /* EnglishInputApp Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		A80000010000000000000002 /* EnglishInputMethod Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A70000010000000000000001 /* EnglishInputCore Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000010000000000000001, A10000010000000000000002, A10000010000000000000003, A10000010000000000000004, A10000010000000000000005, ); runOnlyForDeploymentPostprocessing = 0; };
+		A70000010000000000000002 /* EnglishInputApp Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000010000000000000007, A10000010000000000000008, A10000010000000000000009, ); runOnlyForDeploymentPostprocessing = 0; };
+		A70000010000000000000003 /* EnglishInputMethod Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A1000001000000000000000C, A1000001000000000000000D, A10000010000000000000012, ); runOnlyForDeploymentPostprocessing = 0; };
+		A70000010000000000000004 /* EnglishInputTests Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000010000000000000010, ); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A80000010000000000000001 /* EnglishInputApp Embed Frameworks */ = {isa = PBXCopyFilesBuildPhase; buildActionMask = 2147483647; dstPath = ""; dstSubfolderSpec = 10; files = (A1000001000000000000000B, ); name = "Embed Frameworks"; runOnlyForDeploymentPostprocessing = 0; };
+		A80000010000000000000002 /* EnglishInputMethod Embed Frameworks */ = {isa = PBXCopyFilesBuildPhase; buildActionMask = 2147483647; dstPath = ""; dstSubfolderSpec = 10; files = (A1000001000000000000000F, ); name = "Embed Frameworks"; runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A90000010000000000000001 = {isa = PBXTargetDependency; target = A50000010000000000000001; targetProxy = A90000020000000000000001; };
+		A90000010000000000000002 = {isa = PBXTargetDependency; target = A50000010000000000000001; targetProxy = A90000020000000000000002; };
+		A90000010000000000000003 = {isa = PBXTargetDependency; target = A50000010000000000000001; targetProxy = A90000020000000000000003; };
+/* End PBXTargetDependency section */
+
+/* Begin PBXContainerItemProxy section */
+		A90000020000000000000001 = {isa = PBXContainerItemProxy; containerPortal = A00000000000000000000001; proxyType = 1; remoteGlobalIDString = A50000010000000000000001; remoteInfo = EnglishInputCore; };
+		A90000020000000000000002 = {isa = PBXContainerItemProxy; containerPortal = A00000000000000000000001; proxyType = 1; remoteGlobalIDString = A50000010000000000000001; remoteInfo = EnglishInputCore; };
+		A90000020000000000000003 = {isa = PBXContainerItemProxy; containerPortal = A00000000000000000000001; proxyType = 1; remoteGlobalIDString = A50000010000000000000001; remoteInfo = EnglishInputCore; };
+/* End PBXContainerItemProxy section */
+
+/* Begin XCBuildConfiguration section */
+		A61000010000000000000001 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {CLANG_ENABLE_MODULES = YES; CURRENT_PROJECT_VERSION = 1; DYLIB_INSTALL_NAME_BASE = "@rpath"; ENABLE_TESTABILITY = YES; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = Packages/EnglishInputCore/Info.plist; MACOSX_DEPLOYMENT_TARGET = 13.0; PRODUCT_BUNDLE_IDENTIFIER = io.github.rdj.englishinput.core; PRODUCT_NAME = EnglishInputCore; SWIFT_VERSION = 6.0; }; name = Debug; };
+		A61000010000000000000002 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {CLANG_ENABLE_MODULES = YES; CURRENT_PROJECT_VERSION = 1; DYLIB_INSTALL_NAME_BASE = "@rpath"; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = Packages/EnglishInputCore/Info.plist; MACOSX_DEPLOYMENT_TARGET = 13.0; PRODUCT_BUNDLE_IDENTIFIER = io.github.rdj.englishinput.core; PRODUCT_NAME = EnglishInputCore; SWIFT_VERSION = 6.0; }; name = Release; };
+		A61000010000000000000003 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {CLANG_ENABLE_MODULES = YES; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = EnglishInputApp/Info.plist; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks"; MACOSX_DEPLOYMENT_TARGET = 13.0; PRODUCT_BUNDLE_IDENTIFIER = io.github.rdj.englishinput; PRODUCT_NAME = EnglishInput; SWIFT_VERSION = 6.0; }; name = Debug; };
+		A61000010000000000000004 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {CLANG_ENABLE_MODULES = YES; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = EnglishInputApp/Info.plist; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks"; MACOSX_DEPLOYMENT_TARGET = 13.0; PRODUCT_BUNDLE_IDENTIFIER = io.github.rdj.englishinput; PRODUCT_NAME = EnglishInput; SWIFT_VERSION = 6.0; }; name = Release; };
+		A61000010000000000000005 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {CLANG_ENABLE_MODULES = YES; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = EnglishInputMethod/Info.plist; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks"; MACOSX_DEPLOYMENT_TARGET = 13.0; PRODUCT_BUNDLE_IDENTIFIER = io.github.rdj.englishinput.inputmethod; PRODUCT_NAME = EnglishInputMethod; SWIFT_STRICT_CONCURRENCY = minimal; SWIFT_VERSION = 6.0; }; name = Debug; };
+		A61000010000000000000006 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {CLANG_ENABLE_MODULES = YES; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = EnglishInputMethod/Info.plist; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks"; MACOSX_DEPLOYMENT_TARGET = 13.0; PRODUCT_BUNDLE_IDENTIFIER = io.github.rdj.englishinput.inputmethod; PRODUCT_NAME = EnglishInputMethod; SWIFT_STRICT_CONCURRENCY = minimal; SWIFT_VERSION = 6.0; }; name = Release; };
+		A61000010000000000000007 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {BUNDLE_LOADER = "$(TEST_HOST)"; CLANG_ENABLE_MODULES = YES; GENERATE_INFOPLIST_FILE = YES; MACOSX_DEPLOYMENT_TARGET = 13.0; PRODUCT_BUNDLE_IDENTIFIER = io.github.rdj.englishinput.tests; PRODUCT_NAME = EnglishInputTests; SWIFT_VERSION = 6.0; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EnglishInput.app/Contents/MacOS/EnglishInput"; }; name = Debug; };
+		A61000010000000000000008 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {BUNDLE_LOADER = "$(TEST_HOST)"; CLANG_ENABLE_MODULES = YES; GENERATE_INFOPLIST_FILE = YES; MACOSX_DEPLOYMENT_TARGET = 13.0; PRODUCT_BUNDLE_IDENTIFIER = io.github.rdj.englishinput.tests; PRODUCT_NAME = EnglishInputTests; SWIFT_VERSION = 6.0; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EnglishInput.app/Contents/MacOS/EnglishInput"; }; name = Release; };
+		A61000000000000000000001 /* Project Debug */ = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_CXX_LANGUAGE_STANDARD = "gnu++20"; CLANG_ENABLE_OBJC_ARC = YES; CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES; GCC_C_LANGUAGE_STANDARD = gnu17; MACOSX_DEPLOYMENT_TARGET = 13.0; SWIFT_VERSION = 6.0; }; name = Debug; };
+		A61000000000000000000002 /* Project Release */ = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_CXX_LANGUAGE_STANDARD = "gnu++20"; CLANG_ENABLE_OBJC_ARC = YES; CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES; GCC_C_LANGUAGE_STANDARD = gnu17; MACOSX_DEPLOYMENT_TARGET = 13.0; SWIFT_VERSION = 6.0; }; name = Release; };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A60000000000000000000001 /* Project configuration list */ = {isa = XCConfigurationList; buildConfigurations = (A61000000000000000000001, A61000000000000000000002, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		A60000010000000000000001 /* Core configuration list */ = {isa = XCConfigurationList; buildConfigurations = (A61000010000000000000001, A61000010000000000000002, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		A60000010000000000000002 /* App configuration list */ = {isa = XCConfigurationList; buildConfigurations = (A61000010000000000000003, A61000010000000000000004, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		A60000010000000000000003 /* Method configuration list */ = {isa = XCConfigurationList; buildConfigurations = (A61000010000000000000005, A61000010000000000000006, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		A60000010000000000000004 /* Tests configuration list */ = {isa = XCConfigurationList; buildConfigurations = (A61000010000000000000007, A61000010000000000000008, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+	};
+	rootObject = A00000000000000000000001;
+}
