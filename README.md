@@ -6,7 +6,7 @@
 
 ## 下载与安装
 
-从 GitHub 的 [Releases](https://github.com/rdj/Lucid/releases) 下载最新的 `Lucid-<版本>.dmg`（Release 同时提供 `.pkg` 和 `SHA256SUMS`）：
+从 GitHub 的 [Releases](https://github.com/zebraic07-lab/Lucid/releases) 下载最新的 `Lucid-<版本>.dmg`（Release 同时提供 `.pkg` 和 `SHA256SUMS`）：
 
 1. 打开 DMG，双击其中的 `Lucid-<版本>.pkg` 并完成安装。
 2. 注销并重新登录 macOS（输入法列表没有立即刷新时尤其需要）。

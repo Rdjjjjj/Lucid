@@ -2,10 +2,10 @@ cask "lucid" do
   version "0.1.3"
   sha256 "0418a410fddf807df02b8eb371fec46f3828bc72438b431d036dff3f39049f34"
 
-  url "https://github.com/rdj/Lucid/releases/download/v#{version}/Lucid-#{version}.pkg"
+  url "https://github.com/zebraic07-lab/Lucid/releases/download/v#{version}/Lucid-#{version}.pkg"
   name "Lucid"
   desc "AI-powered English writing assistant for macOS"
-  homepage "https://github.com/rdj/Lucid"
+  homepage "https://github.com/zebraic07-lab/Lucid"
 
   depends_on macos: ">= :ventura"
 
