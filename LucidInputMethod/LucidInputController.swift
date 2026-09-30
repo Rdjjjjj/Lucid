@@ -182,25 +182,22 @@ public final class LucidInputController: IMKInputController, @unchecked Sendable
         let service = HTTPCorrectionService(configuration: configuration, apiKeyStore: keyStore)
         logger.info("correcting length=\(original.count, privacy: .public) — waiting for user choice")
 
-        Task { [weak self] in
+        Task { @MainActor [weak self] in
+            guard let self else { return }
             do {
                 let result = try await service.correct(CorrectionRequest(sentence: original))
-                await MainActor.run {
-                    guard let self, self.requestID == currentRequestID else { return }
-                    // A result is only useful while the user has not continued editing.
-                    // Never overwrite text automatically; the panel is the only commit path.
-                    if self.tracker.version != expectedVersion { return }
-                    if result.correctedText != original {
-                        self.rewriteCache[original] = result.correctedText
-                    }
-                    self.handleResult(result, original: original, context: context)
+                guard self.requestID == currentRequestID else { return }
+                // A result is only useful while the user has not continued editing.
+                // Never overwrite text automatically; the panel is the only commit path.
+                if self.tracker.version != expectedVersion { return }
+                if result.correctedText != original {
+                    self.rewriteCache[original] = result.correctedText
                 }
+                self.handleResult(result, original: original, context: context)
             } catch {
-                await MainActor.run {
-                    guard let self, self.requestID == currentRequestID else { return }
-                    self.showStatus("改写失败：\(error.localizedDescription)", context: context)
-                    self.logger.error("correction failed: \(error.localizedDescription, privacy: .public)")
-                }
+                guard self.requestID == currentRequestID else { return }
+                self.showStatus("改写失败：\(error.localizedDescription)", context: context)
+                self.logger.error("correction failed: \(error.localizedDescription, privacy: .public)")
             }
         }
     }
