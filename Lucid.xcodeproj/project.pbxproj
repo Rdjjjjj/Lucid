@@ -1,0 +1,677 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 60;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000010000000000000001 /* AIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000001 /* AIModels.swift */; };
+		A10000010000000000000002 /* AISettingsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000002 /* AISettingsRepository.swift */; };
+		A10000010000000000000003 /* HTTPCorrectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000003 /* HTTPCorrectionService.swift */; };
+		A10000010000000000000004 /* KeychainAPIKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000004 /* KeychainAPIKeyStore.swift */; };
+		A10000010000000000000005 /* SentenceTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000005 /* SentenceTracker.swift */; };
+		A10000010000000000000006 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000020 /* Security.framework */; };
+		A10000010000000000000015 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000022 /* Carbon.framework */; };
+		A10000010000000000000016 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000022 /* Carbon.framework */; };
+		A10000010000000000000007 /* LucidApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000020000000000000001 /* LucidApp.swift */; };
+		A10000010000000000000008 /* SettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000020000000000000002 /* SettingsModel.swift */; };
+		A10000010000000000000009 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000020000000000000003 /* SettingsView.swift */; };
+		A1000001000000000000000A /* LucidCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000021 /* LucidCore.framework */; };
+		A1000001000000000000000B /* LucidCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000021 /* LucidCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A1000001000000000000000C /* LucidInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000030000000000000001 /* LucidInputController.swift */; };
+		A1000001000000000000000D /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000030000000000000002 /* main.swift */; };
+		A1000001000000000000000E /* LucidCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000021 /* LucidCore.framework */; };
+		A1000001000000000000000F /* LucidCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000021 /* LucidCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A10000010000000000000010 /* SentenceTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000040000000000000001 /* SentenceTrackerTests.swift */; };
+		A10000010000000000000011 /* LucidCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000021 /* LucidCore.framework */; };
+		A10000010000000000000012 /* CorrectionSuggestionPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000030000000000000004 /* CorrectionSuggestionPanel.swift */; };
+		A10000010000000000000013 /* menu_icon.pdf in Resources */ = {isa = PBXBuildFile; fileRef = A20000030000000000000005 /* menu_icon.pdf */; };
+		A10000010000000000000014 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A20000030000000000000006 /* InfoPlist.strings */; };
+		A10000010000000000000017 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20000020000000000000005 /* Assets.xcassets */; };
+		A10000010000000000000019 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = A20000020000000000000007 /* AppIcon.icns */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A90000020000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A00000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A50000010000000000000001;
+			remoteInfo = LucidCore;
+		};
+		A90000020000000000000002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A00000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A50000010000000000000001;
+			remoteInfo = LucidCore;
+		};
+		A90000020000000000000003 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A00000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A50000010000000000000002;
+			remoteInfo = LucidApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A80000010000000000000001 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A1000001000000000000000B /* LucidCore.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A80000010000000000000002 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A1000001000000000000000F /* LucidCore.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		A20000010000000000000001 /* AIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIModels.swift; sourceTree = "<group>"; };
+		A20000010000000000000002 /* AISettingsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AISettingsRepository.swift; sourceTree = "<group>"; };
+		A20000010000000000000003 /* HTTPCorrectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPCorrectionService.swift; sourceTree = "<group>"; };
+		A20000010000000000000004 /* KeychainAPIKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainAPIKeyStore.swift; sourceTree = "<group>"; };
+		A20000010000000000000005 /* SentenceTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentenceTracker.swift; sourceTree = "<group>"; };
+		A20000010000000000000006 /* LucidCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LucidCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20000010000000000000007 /* Lucid.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lucid.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20000010000000000000008 /* LucidInputMethod.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LucidInputMethod.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20000010000000000000009 /* LucidTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LucidTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20000010000000000000020 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		A20000010000000000000022 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		A20000010000000000000021 /* LucidCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LucidCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20000020000000000000001 /* LucidApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LucidApp.swift; sourceTree = "<group>"; };
+		A20000020000000000000002 /* SettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModel.swift; sourceTree = "<group>"; };
+		A20000020000000000000003 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A20000020000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A20000020000000000000005 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A20000020000000000000007 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
+		A20000030000000000000001 /* LucidInputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LucidInputController.swift; sourceTree = "<group>"; };
+		A20000030000000000000002 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		A20000030000000000000003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A20000030000000000000004 /* CorrectionSuggestionPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorrectionSuggestionPanel.swift; sourceTree = "<group>"; };
+		A20000030000000000000005 /* menu_icon.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = menu_icon.pdf; sourceTree = "<group>"; };
+		A20000030000000000000006 /* InfoPlist.strings */ = {isa = PBXVariantGroup; children = (
+			A20000030000000000000007 /* en */,
+			A20000030000000000000008 /* zh-Hans */,
+		); name = InfoPlist.strings; sourceTree = "<group>"; };
+		A20000030000000000000007 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A20000030000000000000008 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		A20000040000000000000001 /* SentenceTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentenceTrackerTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A30000010000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000010000000000000006 /* Security.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A30000010000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000001000000000000000A /* LucidCore.framework in Frameworks */,
+				A10000010000000000000015 /* Carbon.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A30000010000000000000003 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000001000000000000000E /* LucidCore.framework in Frameworks */,
+				A10000010000000000000016 /* Carbon.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A30000010000000000000004 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000010000000000000011 /* LucidCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		551FC7503066CAD400ADE3F9 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				A20000010000000000000021 /* LucidCore.framework */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+		A40000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				A40000010000000000000001 /* Sources/LucidCore */,
+				A40000020000000000000001 /* LucidApp */,
+				A40000030000000000000001 /* LucidInputMethod */,
+				A40000040000000000000001 /* Tests/LucidCoreTests */,
+				A40000050000000000000001 /* Products */,
+				A40000060000000000000001 /* Frameworks */,
+				551FC7503066CAD400ADE3F9 /* Recovered References */,
+			);
+			sourceTree = "<group>";
+		};
+		A40000010000000000000001 /* Sources/LucidCore */ = {
+			isa = PBXGroup;
+			children = (
+				A20000010000000000000001 /* AIModels.swift */,
+				A20000010000000000000002 /* AISettingsRepository.swift */,
+				A20000010000000000000003 /* HTTPCorrectionService.swift */,
+				A20000010000000000000004 /* KeychainAPIKeyStore.swift */,
+				A20000010000000000000005 /* SentenceTracker.swift */,
+			);
+			path = Sources/LucidCore;
+			sourceTree = "<group>";
+		};
+		A40000020000000000000001 /* LucidApp */ = {
+			isa = PBXGroup;
+			children = (
+				A20000020000000000000001 /* LucidApp.swift */,
+				A20000020000000000000002 /* SettingsModel.swift */,
+				A20000020000000000000003 /* SettingsView.swift */,
+				A20000020000000000000004 /* Info.plist */,
+				A20000020000000000000005 /* Assets.xcassets */,
+				A20000020000000000000007 /* AppIcon.icns */,
+			);
+			path = LucidApp;
+			sourceTree = "<group>";
+		};
+		A40000030000000000000001 /* LucidInputMethod */ = {
+			isa = PBXGroup;
+			children = (
+				A20000030000000000000001 /* LucidInputController.swift */,
+				A20000030000000000000002 /* main.swift */,
+				A20000030000000000000003 /* Info.plist */,
+				A20000030000000000000004 /* CorrectionSuggestionPanel.swift */,
+				A20000030000000000000005 /* menu_icon.pdf */,
+				A20000030000000000000006 /* InfoPlist.strings */,
+			);
+			path = LucidInputMethod;
+			sourceTree = "<group>";
+		};
+		A40000040000000000000001 /* Tests/LucidCoreTests */ = {
+			isa = PBXGroup;
+			children = (
+				A20000040000000000000001 /* SentenceTrackerTests.swift */,
+			);
+			path = Tests/LucidCoreTests;
+			sourceTree = "<group>";
+		};
+		A40000050000000000000001 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A20000010000000000000006 /* LucidCore.framework */,
+				A20000010000000000000007 /* Lucid.app */,
+				A20000010000000000000008 /* LucidInputMethod.app */,
+				A20000010000000000000009 /* LucidTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A40000060000000000000001 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A20000010000000000000020 /* Security.framework */,
+				A20000010000000000000022 /* Carbon.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A50000010000000000000001 /* LucidCore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A60000010000000000000001 /* Build configuration list for PBXNativeTarget "LucidCore" */;
+			buildPhases = (
+				A30000010000000000000001 /* Frameworks */,
+				A70000010000000000000001 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LucidCore;
+			productName = LucidCore;
+			productReference = A20000010000000000000006 /* LucidCore.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		A50000010000000000000002 /* LucidApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A60000010000000000000002 /* Build configuration list for PBXNativeTarget "LucidApp" */;
+			buildPhases = (
+				A30000010000000000000002 /* Frameworks */,
+				A70000010000000000000002 /* Sources */,
+				A35000010000000000000002 /* Resources */,
+				A80000010000000000000001 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A90000010000000000000001 /* PBXTargetDependency */,
+			);
+			name = LucidApp;
+			productName = LucidApp;
+			productReference = A20000010000000000000007 /* Lucid.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A50000010000000000000003 /* LucidInputMethod */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A60000010000000000000003 /* Build configuration list for PBXNativeTarget "LucidInputMethod" */;
+			buildPhases = (
+				A30000010000000000000003 /* Frameworks */,
+				A70000010000000000000003 /* Sources */,
+				A35000010000000000000003 /* Resources */,
+				A80000010000000000000002 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A90000010000000000000002 /* PBXTargetDependency */,
+			);
+			name = LucidInputMethod;
+			productName = LucidInputMethod;
+			productReference = A20000010000000000000008 /* LucidInputMethod.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A50000010000000000000004 /* LucidTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A60000010000000000000004 /* Build configuration list for PBXNativeTarget "LucidTests" */;
+			buildPhases = (
+				A30000010000000000000004 /* Frameworks */,
+				A70000010000000000000004 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A90000010000000000000003 /* PBXTargetDependency */,
+			);
+			name = LucidTests;
+			productName = LucidTests;
+			productReference = A20000010000000000000009 /* LucidTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A00000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2700;
+				ORGANIZATIONNAME = "Lucid";
+				TargetAttributes = {
+					A50000010000000000000001 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					A50000010000000000000002 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					A50000010000000000000003 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					A50000010000000000000004 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = A50000010000000000000002;
+					};
+				};
+			};
+			buildConfigurationList = A60000000000000000000001 /* Build configuration list for PBXProject "Lucid" */;
+			compatibilityVersion = "Xcode 15.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				"zh-Hans",
+			);
+			mainGroup = A40000000000000000000001;
+			productRefGroup = A40000050000000000000001 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A50000010000000000000001 /* LucidCore */,
+				A50000010000000000000002 /* LucidApp */,
+				A50000010000000000000003 /* LucidInputMethod */,
+				A50000010000000000000004 /* LucidTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A35000010000000000000002 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000010000000000000017 /* Assets.xcassets in Resources */,
+				A10000010000000000000019 /* AppIcon.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A35000010000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+
+			buildActionMask = 2147483647;
+			files = (
+				A10000010000000000000013 /* menu_icon.pdf in Resources */,
+				A10000010000000000000014 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A70000010000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000010000000000000001 /* AIModels.swift in Sources */,
+				A10000010000000000000002 /* AISettingsRepository.swift in Sources */,
+				A10000010000000000000003 /* HTTPCorrectionService.swift in Sources */,
+				A10000010000000000000004 /* KeychainAPIKeyStore.swift in Sources */,
+				A10000010000000000000005 /* SentenceTracker.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A70000010000000000000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000010000000000000007 /* LucidApp.swift in Sources */,
+				A10000010000000000000008 /* SettingsModel.swift in Sources */,
+				A10000010000000000000009 /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A70000010000000000000003 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000001000000000000000C /* LucidInputController.swift in Sources */,
+				A1000001000000000000000D /* main.swift in Sources */,
+				A10000010000000000000012 /* CorrectionSuggestionPanel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A70000010000000000000004 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000010000000000000010 /* SentenceTrackerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A90000010000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A50000010000000000000001 /* LucidCore */;
+			targetProxy = A90000020000000000000001 /* PBXContainerItemProxy */;
+		};
+		A90000010000000000000002 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A50000010000000000000001 /* LucidCore */;
+			targetProxy = A90000020000000000000002 /* PBXContainerItemProxy */;
+		};
+		A90000010000000000000003 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A50000010000000000000002 /* LucidApp */;
+			targetProxy = A90000020000000000000003 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A61000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		A61000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		A61000010000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_TESTABILITY = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Sources/LucidCore/Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.rdj.lucid.core;
+				PRODUCT_NAME = LucidCore;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		A61000010000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Sources/LucidCore/Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.rdj.lucid.core;
+				PRODUCT_NAME = LucidCore;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		A61000010000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = LucidApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.rdj.lucid;
+				PRODUCT_NAME = Lucid;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		A61000010000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = LucidApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.rdj.lucid;
+				PRODUCT_NAME = Lucid;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		A61000010000000000000005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = LucidInputMethod/LucidInputMethod.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = LucidInputMethod/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.rdj.inputmethod.lucid;
+				PRODUCT_NAME = LucidInputMethod;
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		A61000010000000000000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = LucidInputMethod/LucidInputMethod.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = LucidInputMethod/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.rdj.inputmethod.lucid;
+				PRODUCT_NAME = LucidInputMethod;
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		A61000010000000000000007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.rdj.lucid.tests;
+				PRODUCT_NAME = LucidTests;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Lucid.app/Contents/MacOS/Lucid";
+			};
+			name = Debug;
+		};
+		A61000010000000000000008 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.rdj.lucid.tests;
+				PRODUCT_NAME = LucidTests;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Lucid.app/Contents/MacOS/Lucid";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A60000000000000000000001 /* Build configuration list for PBXProject "Lucid" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A61000000000000000000001 /* Debug */,
+				A61000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A60000010000000000000001 /* Build configuration list for PBXNativeTarget "LucidCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A61000010000000000000001 /* Debug */,
+				A61000010000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A60000010000000000000002 /* Build configuration list for PBXNativeTarget "LucidApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A61000010000000000000003 /* Debug */,
+				A61000010000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A60000010000000000000003 /* Build configuration list for PBXNativeTarget "LucidInputMethod" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A61000010000000000000005 /* Debug */,
+				A61000010000000000000006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A60000010000000000000004 /* Build configuration list for PBXNativeTarget "LucidTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A61000010000000000000007 /* Debug */,
+				A61000010000000000000008 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A00000000000000000000001 /* Project object */;
+}

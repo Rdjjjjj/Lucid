@@ -1,0 +1,20 @@
+{
+  "fill" : {
+    "solid" : "extended-srgb:0.00000,0.00000,0.00000,1.00000"
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "image-name" : "Lucid.png",
+          "name" : "Lucid"
+        }
+      ]
+    }
+  ],
+  "supported-platforms" : {
+    "squares" : [
+      "macOS"
+    ]
+  }
+}

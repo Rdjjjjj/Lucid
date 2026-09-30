@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test-and-build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check public-release hygiene
+        run: ./scripts/check-public-release.sh
+      - name: Run Swift package tests
+        run: swift test
+      - name: Run Xcode tests
+        run: xcodebuild -project Lucid.xcodeproj -scheme LucidApp -configuration Debug -sdk macosx -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO test
+      - name: Build settings app
+        run: xcodebuild -project Lucid.xcodeproj -scheme LucidApp -configuration Release -sdk macosx CODE_SIGNING_ALLOWED=NO build
+      - name: Build input method
+        run: xcodebuild -project Lucid.xcodeproj -scheme LucidInputMethod -configuration Release -sdk macosx CODE_SIGNING_ALLOWED=NO build

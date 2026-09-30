@@ -17,3 +17,12 @@ xcuserdata/
 # 安装包
 *.dmg
 *.pkg
+
+# 本地工具和日志
+.monkeycode/
+*.log
+*.bak
+*.swp
+
+# Xcode 本地用户数据（包括嵌套目录）
+*.xcuserdatad/

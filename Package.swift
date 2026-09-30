@@ -2,22 +2,13 @@
 import PackageDescription
 
 let package = Package(
-    name: "EnglishInput",
+    name: "Lucid",
     platforms: [.macOS(.v13)],
     products: [
-        .library(name: "EnglishInputCore", targets: ["EnglishInputCore"]),
-        .library(name: "EnglishInputMethod", targets: ["EnglishInputMethod"]),
+        .library(name: "LucidCore", targets: ["LucidCore"]),
     ],
     targets: [
-        .target(name: "EnglishInputCore"),
-        .target(
-            name: "EnglishInputMethod",
-            dependencies: ["EnglishInputCore"],
-            linkerSettings: [
-                .linkedFramework("InputMethodKit"),
-                .linkedFramework("AppKit"),
-            ]
-        ),
-        .testTarget(name: "EnglishInputCoreTests", dependencies: ["EnglishInputCore"]),
+        .target(name: "LucidCore", exclude: ["Info.plist"]),
+        .testTarget(name: "LucidCoreTests", dependencies: ["LucidCore"]),
     ]
 )

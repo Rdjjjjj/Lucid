@@ -2,22 +2,38 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-BUILD_DIR="$ROOT_DIR/build/ReleaseDerivedDataFixed"
+BUILD_DIR="$ROOT_DIR/build/ReleaseDerivedData"
 DIST_DIR="$ROOT_DIR/dist"
 COMPONENT_PLIST="$ROOT_DIR/build/components.plist"
-VERSION="0.1.3"
-IDENTIFIER="io.github.rdj.englishinput.installer"
+VERSION="${VERSION:-$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ROOT_DIR/LucidApp/Info.plist")}"
+IDENTIFIER="io.github.rdj.lucid.installer"
+PKG_PATH="$DIST_DIR/Lucid-$VERSION.pkg"
+DMG_PATH="$DIST_DIR/Lucid-$VERSION.dmg"
 
-# 每次构建使用全新的临时目录，避免清理旧文件的 rm -rf
-STAGE_DIR="$(mktemp -d "$ROOT_DIR/build/package-root.XXXXXX")"
-DMG_ROOT="$(mktemp -d "$ROOT_DIR/build/dmg-root.XXXXXX")"
+if [[ ! "$VERSION" =~ '^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$' ]]; then
+  print -u2 "Invalid VERSION: $VERSION"
+  exit 1
+fi
+INPUT_METHOD_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ROOT_DIR/LucidInputMethod/Info.plist")"
+if [[ "$INPUT_METHOD_VERSION" != "$VERSION" ]]; then
+  print -u2 "Version mismatch: LucidApp=$VERSION, LucidInputMethod=$INPUT_METHOD_VERSION"
+  exit 1
+fi
 
 mkdir -p "$ROOT_DIR/build" "$DIST_DIR"
 
-# 构建 universal（Apple Silicon + Intel），先不签名，稍后统一 ad-hoc 签名
+# Temporary staging directories are cleaned automatically, including on build failure.
+STAGE_DIR="$(mktemp -d "$ROOT_DIR/build/package-root.XXXXXX")"
+DMG_ROOT="$(mktemp -d "$ROOT_DIR/build/dmg-root.XXXXXX")"
+cleanup() {
+  /bin/rm -rf "$STAGE_DIR" "$DMG_ROOT"
+}
+trap cleanup EXIT
+
+# Build universal binaries (Apple Silicon + Intel) without a developer certificate.
 xcodebuild \
-  -project "$ROOT_DIR/EnglishInput.xcodeproj" \
-  -scheme EnglishInputApp \
+  -project "$ROOT_DIR/Lucid.xcodeproj" \
+  -scheme LucidApp \
   -configuration Release \
   -sdk macosx \
   -arch arm64 -arch x86_64 \
@@ -25,28 +41,42 @@ xcodebuild \
   build CODE_SIGNING_ALLOWED=NO
 
 xcodebuild \
-  -project "$ROOT_DIR/EnglishInput.xcodeproj" \
-  -scheme EnglishInputMethod \
+  -project "$ROOT_DIR/Lucid.xcodeproj" \
+  -scheme LucidInputMethod \
   -configuration Release \
   -sdk macosx \
   -arch arm64 -arch x86_64 \
   -derivedDataPath "$BUILD_DIR" \
   build CODE_SIGNING_ALLOWED=NO
+
+assert_universal_binary() {
+  local binary="$1"
+  local architectures
+  [[ -f "$binary" ]] || { print -u2 "Missing build output: $binary"; exit 1; }
+  architectures="$(lipo -archs "$binary")"
+  if [[ " $architectures " != *" arm64 "* || " $architectures " != *" x86_64 "* ]]; then
+    print -u2 "Expected arm64+x86_64 universal binary, got '$architectures': $binary"
+    exit 1
+  fi
+}
+
+assert_universal_binary "$BUILD_DIR/Build/Products/Release/Lucid.app/Contents/MacOS/Lucid"
+assert_universal_binary "$BUILD_DIR/Build/Products/Release/LucidInputMethod.app/Contents/MacOS/LucidInputMethod"
 
 mkdir -p "$STAGE_DIR/Applications" "$STAGE_DIR/Library/Input Methods"
-ditto --norsrc "$BUILD_DIR/Build/Products/Release/EnglishInput.app" "$STAGE_DIR/Applications/EnglishInput.app"
-ditto --norsrc "$BUILD_DIR/Build/Products/Release/EnglishInputMethod.app" "$STAGE_DIR/Library/Input Methods/EnglishInputMethod.app"
+ditto --norsrc "$BUILD_DIR/Build/Products/Release/Lucid.app" "$STAGE_DIR/Applications/Lucid.app"
+ditto --norsrc "$BUILD_DIR/Build/Products/Release/LucidInputMethod.app" "$STAGE_DIR/Library/Input Methods/LucidInputMethod.app"
 find "$STAGE_DIR" -name '._*' -delete
 find "$STAGE_DIR" -name '.DS_Store' -delete
 
-# 关键：完整 ad-hoc 签名。输入法必须完整签名（Info.plist 绑定 + 嵌套 framework 签名），
-# 否则 InputMethodKit 不会把它注册为可用输入法。
-codesign --force --deep --sign - "$STAGE_DIR/Library/Input Methods/EnglishInputMethod.app"
-codesign --force --deep --sign - "$STAGE_DIR/Applications/EnglishInput.app"
+# InputMethodKit requires a complete code signature, including nested frameworks.
+codesign --force --deep --sign - "$STAGE_DIR/Library/Input Methods/LucidInputMethod.app"
+codesign --force --deep --sign - "$STAGE_DIR/Applications/Lucid.app"
+codesign --verify --deep --strict --verbose=1 "$STAGE_DIR/Library/Input Methods/LucidInputMethod.app"
+codesign --verify --deep --strict --verbose=1 "$STAGE_DIR/Applications/Lucid.app"
 
-# 自检：确认嵌套代码通过严格校验
-codesign --verify --deep --strict --verbose=1 "$STAGE_DIR/Library/Input Methods/EnglishInputMethod.app"
-
+# Keep release artifacts versioned so the GitHub Release and Homebrew cask URL agree.
+/bin/rm -f "$COMPONENT_PLIST" "$PKG_PATH" "$DMG_PATH"
 pkgbuild --analyze --root "$STAGE_DIR" "$COMPONENT_PLIST"
 plutil -replace '0.BundleIsRelocatable' -bool false "$COMPONENT_PLIST"
 plutil -replace '1.BundleIsRelocatable' -bool false "$COMPONENT_PLIST"
@@ -57,29 +87,27 @@ pkgbuild \
   --identifier "$IDENTIFIER" \
   --version "$VERSION" \
   --install-location / \
-  "$DIST_DIR/EnglishInput.pkg"
+  "$PKG_PATH"
 
 mkdir -p "$DMG_ROOT"
-cp "$DIST_DIR/EnglishInput.pkg" "$DMG_ROOT/"
-cat > "$DMG_ROOT/安装说明.txt" <<'EOF'
-English Input 安装说明
+cp "$PKG_PATH" "$DMG_ROOT/"
+cat > "$DMG_ROOT/安装说明.txt" <<INSTALL
+Lucid 安装说明
 
-推荐方式（已安装 Homebrew 的用户）：
-  brew install --cask rdj/tap/english-input
-  或按仓库 README 中的 cask 命令安装。
+手动安装：
+  1. 双击 Lucid-$VERSION.pkg 完成安装（会请求管理员密码）。
+  2. 注销并重新登录 macOS。
+  3. 打开“系统设置 → 键盘 → 文本输入”，添加并启用 Lucid。
+  4. 从“应用程序”打开 Lucid，填写 AI 服务地址和 API Key，获取模型列表后选择模型。
 
-手动安装（双击本 pkg）：
-  1. 双击 EnglishInput.pkg 完成安装（会请求管理员密码）。
-  2. 注销并重新登录。
-  3. 打开“系统设置 → 键盘 → 文本输入 → 编辑”，启用 English Input。
-  4. 从“应用程序”打开 EnglishInput，填写 AI 中转站、模型和 API Key。
-EOF
+隐私提示：输入内容会发送到你在 Lucid 设置中配置的 AI 服务商。
+INSTALL
 
 hdiutil create \
-  -volname "English Input" \
+  -volname "Lucid" \
   -srcfolder "$DMG_ROOT" \
   -format UDZO \
   -ov \
-  "$DIST_DIR/EnglishInput-$VERSION.dmg"
+  "$DMG_PATH"
 
-printf '\nCreated:\n  %s\n  %s\n' "$DIST_DIR/EnglishInput.pkg" "$DIST_DIR/EnglishInput-$VERSION.dmg"
+printf '\nCreated:\n  %s\n  %s\n' "$PKG_PATH" "$DMG_PATH"
