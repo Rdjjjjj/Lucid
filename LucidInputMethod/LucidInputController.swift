@@ -218,7 +218,7 @@ public final class LucidInputController: IMKInputController, @unchecked Sendable
     private func handleResult(
         _ result: CorrectionResult,
         original: String,
-        context: ClientContext,
+        context: ClientContext
     ) {
         let rewritten = result.correctedText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard rewritten.isEmpty == false else {
