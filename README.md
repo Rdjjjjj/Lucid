@@ -8,8 +8,8 @@ Lucid 是一款 macOS 英文输入法。像平常一样写英文；遇到不会�
 I want to mai coffee.
 → I want to buy coffee.
 
-juemingdushi is this movie good?
-→ Is Breaking Bad a good show?
+this coffee tai haohe le.
+→ This coffee tastes great.
 ```
 
 拼音只是暂时占位，不会打断正在输入的句子。Lucid 只提供建议，不会自动改写或发送。
