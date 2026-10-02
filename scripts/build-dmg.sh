@@ -8,8 +8,6 @@ COMPONENT_PLIST="$ROOT_DIR/build/components.plist"
 VERSION="${VERSION:-$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ROOT_DIR/LucidApp/Info.plist")}"
 IDENTIFIER="io.github.rdj.lucid.installer"
 PKG_PATH="$DIST_DIR/Lucid-$VERSION.pkg"
-DMG_PATH="$DIST_DIR/Lucid-$VERSION.dmg"
-
 if [[ ! "$VERSION" =~ '^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$' ]]; then
   print -u2 "Invalid VERSION: $VERSION"
   exit 1
@@ -22,11 +20,10 @@ fi
 
 mkdir -p "$ROOT_DIR/build" "$DIST_DIR"
 
-# Temporary staging directories are cleaned automatically, including on build failure.
+# The temporary staging directory is cleaned automatically, including on build failure.
 STAGE_DIR="$(mktemp -d "$ROOT_DIR/build/package-root.XXXXXX")"
-DMG_ROOT="$(mktemp -d "$ROOT_DIR/build/dmg-root.XXXXXX")"
 cleanup() {
-  /bin/rm -rf "$STAGE_DIR" "$DMG_ROOT"
+  /bin/rm -rf "$STAGE_DIR"
 }
 trap cleanup EXIT
 
@@ -76,7 +73,7 @@ codesign --verify --deep --strict --verbose=1 "$STAGE_DIR/Library/Input Methods/
 codesign --verify --deep --strict --verbose=1 "$STAGE_DIR/Applications/Lucid.app"
 
 # Keep release artifacts versioned so the GitHub Release and Homebrew cask URL agree.
-/bin/rm -f "$COMPONENT_PLIST" "$PKG_PATH" "$DMG_PATH"
+/bin/rm -f "$COMPONENT_PLIST" "$PKG_PATH"
 pkgbuild --analyze --root "$STAGE_DIR" "$COMPONENT_PLIST"
 plutil -replace '0.BundleIsRelocatable' -bool false "$COMPONENT_PLIST"
 plutil -replace '1.BundleIsRelocatable' -bool false "$COMPONENT_PLIST"
@@ -89,25 +86,4 @@ pkgbuild \
   --install-location / \
   "$PKG_PATH"
 
-mkdir -p "$DMG_ROOT"
-cp "$PKG_PATH" "$DMG_ROOT/"
-cat > "$DMG_ROOT/安装说明.txt" <<INSTALL
-Lucid 安装说明
-
-手动安装：
-  1. 双击 Lucid-$VERSION.pkg 完成安装（会请求管理员密码）。
-  2. 注销并重新登录 macOS。
-  3. 打开“系统设置 → 键盘 → 文本输入”，添加并启用 Lucid。
-  4. 从“应用程序”打开 Lucid，填写 AI 服务地址和 API Key，获取模型列表后选择模型。
-
-隐私提示：输入内容会发送到你在 Lucid 设置中配置的 AI 服务商。
-INSTALL
-
-hdiutil create \
-  -volname "Lucid" \
-  -srcfolder "$DMG_ROOT" \
-  -format UDZO \
-  -ov \
-  "$DMG_PATH"
-
-printf '\nCreated:\n  %s\n  %s\n' "$PKG_PATH" "$DMG_PATH"
+printf '\nCreated:\n  %s\n' "$PKG_PATH"

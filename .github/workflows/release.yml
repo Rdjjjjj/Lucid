@@ -39,11 +39,9 @@ jobs:
       - name: Verify release artifacts
         run: |
           version="${GITHUB_REF_NAME#v}"
-          dmg="dist/Lucid-${version}.dmg"
           pkg="dist/Lucid-${version}.pkg"
-          test -s "$dmg"
           test -s "$pkg"
-          (cd dist && shasum -a 256 "Lucid-${version}.dmg" "Lucid-${version}.pkg") > dist/SHA256SUMS
+          (cd dist && shasum -a 256 "Lucid-${version}.pkg") > dist/SHA256SUMS
           {
             echo "### Release artifact checksums"
             echo
@@ -58,7 +56,6 @@ jobs:
         run: |
           version="${GITHUB_REF_NAME#v}"
           gh release create "$GITHUB_REF_NAME" \
-            "dist/Lucid-${version}.dmg" \
             "dist/Lucid-${version}.pkg" \
             dist/SHA256SUMS \
             --verify-tag \

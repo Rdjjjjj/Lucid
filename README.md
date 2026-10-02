@@ -6,9 +6,9 @@
 
 ## 下载与安装
 
-从 GitHub 的 [Releases](https://github.com/Rdjjjjj/Lucid/releases) 下载最新的 `Lucid-<版本>.dmg`（Release 同时提供 `.pkg` 和 `SHA256SUMS`）：
+从 GitHub 的 [Releases](https://github.com/Rdjjjjj/Lucid/releases) 下载最新的 `Lucid-<版本>.pkg`：
 
-1. 打开 DMG，双击其中的 `Lucid-<版本>.pkg` 并完成安装。
+1. 双击 `Lucid-<版本>.pkg` 并完成安装。
 2. 注销并重新登录 macOS（输入法列表没有立即刷新时尤其需要）。
 3. 打开「系统设置 → 键盘 → 文本输入 → 编辑」，添加并启用 **Lucid**。
 4. 从「应用程序」打开 **Lucid**，填写 AI 服务地址和 API Key，点击「获取模型列表」，选择模型并保存。
@@ -41,7 +41,6 @@ swift test
 产物输出到 `dist/`：
 
 - `Lucid-<版本>.pkg`
-- `Lucid-<版本>.dmg`
 
 默认版本从 `LucidApp/Info.plist` 读取，也可以临时覆盖：
 
@@ -53,7 +52,7 @@ VERSION=0.1.4 ./scripts/build-dmg.sh
 
 1. 同步更新 `LucidApp/Info.plist` 和 `LucidInputMethod/Info.plist` 的版本号。
 2. 提交并推送一个同版本的 Git 标签，例如 `v0.1.4`。
-3. GitHub Actions 会自动测试、构建 universal `.dmg` / `.pkg`，并创建 Release；也可以手动运行构建脚本后上传产物。
+3. GitHub Actions 会自动测试、构建 universal `.pkg`，并创建 Release；也可以手动运行构建脚本后上传产物。
 4. 如使用 Homebrew Cask，先从 GitHub Release 下载的最终 `.pkg` 计算 SHA-256，再更新 `homebrew/lucid.rb`；本地构建包和 GitHub Actions 构建包的 SHA-256 可能不同。
 
 发布前可运行公开仓库检查：
