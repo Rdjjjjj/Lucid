@@ -5,11 +5,11 @@
 Lucid 是一款 macOS 英文输入法。像平常一样写英文；遇到不会拼的单词，直接用拼音占位。句子写完后，AI 把它整理成通顺的英文，确认后再替换原文。
 
 ```text
-I want to mai coffee.
-→ I want to buy coffee.
+qing zai jintian xiawu qian fankui.
+→ Please share your feedback by this afternoon.
 
-this coffee tai haohe le.
-→ This coffee tastes great.
+women xuyao zai huiyi qian wancheng zhege fangan.
+→ We need to finalize this proposal before the meeting.
 ```
 
 拼音只是暂时占位，不会打断正在输入的句子。Lucid 只提供建议，不会自动改写或发送。
@@ -25,7 +25,7 @@ this coffee tai haohe le.
 ## 怎么用
 
 1. 切换到 Lucid，在任意文本框里输入英文。
-2. 不会拼的单词直接写拼音，例如 `mai`、`juemingdushi`。
+2. 不会拼的单词直接写拼音，例如 `fankui`、`fangan`。
 3. 输入句号、问号、感叹号，或停顿约两秒。
 4. 查看建议后，选择使用英文或保留原文。
 
