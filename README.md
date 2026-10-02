@@ -40,25 +40,6 @@ Lucid 不内置模型或 API Key，也不保存输入历史。API Key 存在 mac
 - macOS 13 (Ventura) 或更高版本
 - Apple Silicon 或 Intel
 
-## 从源码构建
-
-需要 Xcode 和 macOS Command Line Tools：
-
-```bash
-swift test
-./scripts/build-dmg.sh
-```
-
-安装包输出到 `dist/Lucid-<版本>.pkg`。版本默认读取 `LucidApp/Info.plist`，也可以临时指定：
-
-```bash
-VERSION=0.1.4 ./scripts/build-dmg.sh
-```
-
-发布时同步更新两个 `Info.plist` 的版本号，再推送同版本标签，例如 `v0.1.4`。GitHub Actions 会测试、构建 universal `.pkg` 并创建 Release。
-
-当前使用 ad-hoc 签名，适合个人分发和测试；普通用户下载后仍可能看到 Gatekeeper 提示。
-
 ## License
 
 [MIT License](LICENSE)
