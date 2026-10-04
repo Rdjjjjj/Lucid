@@ -6,6 +6,9 @@ private let bundleID = "io.github.rdj.inputmethod.lucid"
 private let connectionName = "io.github.rdj.inputmethod.lucid_Connection"
 private let modeID = "io.github.rdj.inputmethod.lucid.english"
 
+@_silgen_name("LucidInstallHandleEventNow")
+private func installHandleEventBridge()
+
 private func sourceID(_ src: TISInputSource) -> String {
     guard let raw = TISGetInputSourceProperty(src, kTISPropertyInputSourceID) else { return "" }
     return Unmanaged<CFString>.fromOpaque(raw).takeUnretainedValue() as String
@@ -81,6 +84,9 @@ if args.contains("--select") {
 
 // 正常被 imklaunchagent 拉起时只提供输入法服务，不要反复 TISEnable。
 registerBundle()
+// Install the fallback callback after the controller class has been loaded,
+// before IMK starts creating controller instances for the active client.
+installHandleEventBridge()
 let server = IMKServer(name: connectionName, bundleIdentifier: Bundle.main.bundleIdentifier)
 _ = server
 NSApplication.shared.run()

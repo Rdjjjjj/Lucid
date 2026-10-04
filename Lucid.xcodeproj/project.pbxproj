@@ -10,9 +10,8 @@
 		A10000010000000000000001 /* AIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000001 /* AIModels.swift */; };
 		A10000010000000000000002 /* AISettingsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000002 /* AISettingsRepository.swift */; };
 		A10000010000000000000003 /* HTTPCorrectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000003 /* HTTPCorrectionService.swift */; };
-		A10000010000000000000004 /* KeychainAPIKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000004 /* KeychainAPIKeyStore.swift */; };
+		A10000010000000000000004 /* DefaultsAPIKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000004 /* DefaultsAPIKeyStore.swift */; };
 		A10000010000000000000005 /* SentenceTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000005 /* SentenceTracker.swift */; };
-		A10000010000000000000006 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000020 /* Security.framework */; };
 		A10000010000000000000015 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000022 /* Carbon.framework */; };
 		A10000010000000000000016 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000022 /* Carbon.framework */; };
 		A10000010000000000000007 /* LucidApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000020000000000000001 /* LucidApp.swift */; };
@@ -22,6 +21,7 @@
 		A1000001000000000000000B /* LucidCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000021 /* LucidCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A1000001000000000000000C /* LucidInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000030000000000000001 /* LucidInputController.swift */; };
 		A1000001000000000000000D /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000030000000000000002 /* main.swift */; };
+		A1000001000000000000001A /* LucidInputController+Handle.m in Sources */ = {isa = PBXBuildFile; fileRef = A20000030000000000000009 /* LucidInputController+Handle.m */; };
 		A1000001000000000000000E /* LucidCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000021 /* LucidCore.framework */; };
 		A1000001000000000000000F /* LucidCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000021 /* LucidCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A10000010000000000000010 /* SentenceTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000040000000000000001 /* SentenceTrackerTests.swift */; };
@@ -86,13 +86,12 @@
 		A20000010000000000000001 /* AIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIModels.swift; sourceTree = "<group>"; };
 		A20000010000000000000002 /* AISettingsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AISettingsRepository.swift; sourceTree = "<group>"; };
 		A20000010000000000000003 /* HTTPCorrectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPCorrectionService.swift; sourceTree = "<group>"; };
-		A20000010000000000000004 /* KeychainAPIKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainAPIKeyStore.swift; sourceTree = "<group>"; };
+		A20000010000000000000004 /* DefaultsAPIKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsAPIKeyStore.swift; sourceTree = "<group>"; };
 		A20000010000000000000005 /* SentenceTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentenceTracker.swift; sourceTree = "<group>"; };
 		A20000010000000000000006 /* LucidCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LucidCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20000010000000000000007 /* Lucid.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lucid.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20000010000000000000008 /* LucidInputMethod.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LucidInputMethod.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20000010000000000000009 /* LucidTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LucidTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A20000010000000000000020 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		A20000010000000000000022 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		A20000010000000000000021 /* LucidCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LucidCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20000020000000000000001 /* LucidApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LucidApp.swift; sourceTree = "<group>"; };
@@ -106,6 +105,7 @@
 		A20000030000000000000003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A20000030000000000000004 /* CorrectionSuggestionPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorrectionSuggestionPanel.swift; sourceTree = "<group>"; };
 		A20000030000000000000005 /* menu_icon.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = menu_icon.pdf; sourceTree = "<group>"; };
+		A20000030000000000000009 /* LucidInputController+Handle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "LucidInputController+Handle.m"; sourceTree = "<group>"; };
 		A20000030000000000000006 /* InfoPlist.strings */ = {isa = PBXVariantGroup; children = (
 			A20000030000000000000007 /* en */,
 			A20000030000000000000008 /* zh-Hans */,
@@ -120,7 +120,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A10000010000000000000006 /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -180,7 +179,7 @@
 				A20000010000000000000001 /* AIModels.swift */,
 				A20000010000000000000002 /* AISettingsRepository.swift */,
 				A20000010000000000000003 /* HTTPCorrectionService.swift */,
-				A20000010000000000000004 /* KeychainAPIKeyStore.swift */,
+				A20000010000000000000004 /* DefaultsAPIKeyStore.swift */,
 				A20000010000000000000005 /* SentenceTracker.swift */,
 			);
 			path = Sources/LucidCore;
@@ -206,6 +205,7 @@
 				A20000030000000000000002 /* main.swift */,
 				A20000030000000000000003 /* Info.plist */,
 				A20000030000000000000004 /* CorrectionSuggestionPanel.swift */,
+				A20000030000000000000009 /* LucidInputController+Handle.m */,
 				A20000030000000000000005 /* menu_icon.pdf */,
 				A20000030000000000000006 /* InfoPlist.strings */,
 			);
@@ -234,7 +234,6 @@
 		A40000060000000000000001 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				A20000010000000000000020 /* Security.framework */,
 				A20000010000000000000022 /* Carbon.framework */,
 			);
 			name = Frameworks;
@@ -390,7 +389,7 @@
 				A10000010000000000000001 /* AIModels.swift in Sources */,
 				A10000010000000000000002 /* AISettingsRepository.swift in Sources */,
 				A10000010000000000000003 /* HTTPCorrectionService.swift in Sources */,
-				A10000010000000000000004 /* KeychainAPIKeyStore.swift in Sources */,
+				A10000010000000000000004 /* DefaultsAPIKeyStore.swift in Sources */,
 				A10000010000000000000005 /* SentenceTracker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -411,6 +410,7 @@
 			files = (
 				A1000001000000000000000C /* LucidInputController.swift in Sources */,
 				A1000001000000000000000D /* main.swift in Sources */,
+				A1000001000000000000001A /* LucidInputController+Handle.m in Sources */,
 				A10000010000000000000012 /* CorrectionSuggestionPanel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

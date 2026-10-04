@@ -1,0 +1,16 @@
+[package]
+name = "lucid-platform"
+description = "Lucid 各平台壳共用的配置、键位与建议帧"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+lucid-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

@@ -37,16 +37,15 @@ final class SettingsModel: ObservableObject {
     }
 
     private let repository: AISettingsRepository
-    private let keyStore: KeychainAPIKeyStore
+    private let keyStore: DefaultsAPIKeyStore
 
     init() {
         let suiteName = Bundle.main.object(forInfoDictionaryKey: "LucidAppGroup") as? String
             ?? "group.io.github.rdj.lucid"
         let defaults = UserDefaults(suiteName: suiteName) ?? .standard
-        let keychainGroup = Bundle.main.object(forInfoDictionaryKey: "LucidKeychainAccessGroup") as? String
-        keyStore = KeychainAPIKeyStore(accessGroup: keychainGroup)
-        repository = AISettingsRepository(defaults: defaults, keychain: keyStore)
-        keyConfigured = repository.hasAPIKey()
+        keyStore = DefaultsAPIKeyStore(defaults: defaults)
+        repository = AISettingsRepository(defaults: defaults, keyStore: keyStore)
+        keyConfigured = repository.sharedAPIKey() != nil
 
         if let config = try? repository.loadConfiguration() {
             apiProtocol = config.apiProtocol

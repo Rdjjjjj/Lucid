@@ -81,7 +81,7 @@ struct SettingsView: View {
                     }
                     SecureField(model.keyConfigured ? "已保存 Key；输入新 Key 可替换" : "粘贴 API Key", text: $model.apiKey)
                         .textFieldStyle(.roundedBorder)
-                    Text("Key 仅保存在当前设备的钥匙串中，不会在界面中显示。请求会发送到你填写的 AI 服务地址。")
+                    Text("Key 只保存在 Lucid 自己的设置里，不会写入钥匙串。")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }

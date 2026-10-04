@@ -21,7 +21,7 @@ xcodebuild \
   -configuration Release \
   -sdk macosx \
   -derivedDataPath "$BUILD_DIR/DerivedData" \
-  build
+  build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
 
 xcodebuild \
   -project "$ROOT_DIR/Lucid.xcodeproj" \
@@ -29,7 +29,7 @@ xcodebuild \
   -configuration Release \
   -sdk macosx \
   -derivedDataPath "$BUILD_DIR/DerivedData" \
-  build
+  build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
 
 SRC_IM="$BUILD_DIR/DerivedData/Build/Products/Release/LucidInputMethod.app"
 SRC_APP="$BUILD_DIR/DerivedData/Build/Products/Release/Lucid.app"
@@ -37,6 +37,9 @@ ditto --norsrc "$SRC_IM" "$STAGE_APP"
 ditto --norsrc "$SRC_APP" "$STAGE_SETTINGS"
 /usr/bin/xattr -cr "$STAGE_APP" || true
 /usr/bin/xattr -cr "$STAGE_SETTINGS" || true
+# 本地安装用 ad-hoc 签名，不依赖开发者证书，和打包脚本保持一致。
+/usr/bin/codesign --force --deep --sign - "$STAGE_APP"
+/usr/bin/codesign --force --deep --sign - "$STAGE_SETTINGS"
 
 echo "==> Stopping old input method"
 /usr/bin/killall LucidInputMethod 2>/dev/null || true
@@ -51,9 +54,10 @@ if [ -e "$HOME/Library/Input Methods/EnglishInputMethod.app" ]; then
   mv "$HOME/Library/Input Methods/EnglishInputMethod.app" "$HOME/.Trash/EnglishInputMethod-user-$stamp.app"
 fi
 
-if [ -d "/Applications/Lucid.app" ] || [ -d "$SRC_APP" ]; then
-  ditto --norsrc "$STAGE_SETTINGS" "$SETTINGS_APP"
-  /usr/bin/xattr -cr "$SETTINGS_APP" || true
+# 设置 App 只是配置界面，装不上也不影响输入法本体，这里失败不终止安装。
+if [ -w "/Applications" ] || [ -d "$SETTINGS_APP" ]; then
+  ditto --norsrc "$STAGE_SETTINGS" "$SETTINGS_APP" 2>/dev/null || true
+  /usr/bin/xattr -cr "$SETTINGS_APP" 2>/dev/null || true
 fi
 
 install_system_copy() {
@@ -90,6 +94,31 @@ fi
 BIN="$TARGET_APP/Contents/MacOS/LucidInputMethod"
 
 echo "==> Registering inside Aqua session"
+# Debug/Release products and old quarantine copies must never stay registered
+# as input methods. LaunchServices indexes bundles even after they are renamed,
+# so renaming an .app to .disabled-input-method creates duplicate Lucid rows.
+LSREGISTER="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
+unregister_stale_input_methods() {
+  local root="$1"
+  [ -d "$root" ] || return 0
+  find "$root" -type d \
+    \( -name 'LucidInputMethod.app' -o -name 'EnglishInputMethod.app' \) \
+    -prune -print0 2>/dev/null |
+    while IFS= read -r -d '' stale; do
+      "$LSREGISTER" -u "$stale" >/dev/null 2>&1 || true
+    done
+}
+
+# Remove registrations first, then discard generated build/quarantine bundles.
+for stale_root in "$ROOT_DIR/build" "$ROOT_DIR/target" \
+  "$HOME/LucidDisabledCopies" "$HOME/Library/Caches/LucidTypingFix"; do
+  unregister_stale_input_methods "$stale_root"
+done
+if [ -d "$ROOT_DIR/build" ]; then
+  find "$ROOT_DIR/build" -type d \
+    \( -name 'LucidInputMethod.app' -o -name 'EnglishInputMethod.app' \) \
+    -prune -exec rm -rf {} + 2>/dev/null || true
+fi
 /bin/launchctl asuser "$UID_NUM" /usr/bin/sudo -u "$USER_NAME" /usr/bin/killall -HUP cfprefsd 2>/dev/null || true
 /bin/launchctl asuser "$UID_NUM" /usr/bin/sudo -u "$USER_NAME" "$BIN" --deactivate || true
 /bin/launchctl asuser "$UID_NUM" /usr/bin/sudo -u "$USER_NAME" /usr/bin/killall -HUP cfprefsd 2>/dev/null || true

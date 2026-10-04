@@ -1,0 +1,36 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/lucid-core",
+    "crates/lucid-platform",
+    "apps/macos",
+]
+
+[workspace.package]
+version = "0.2.9"
+edition = "2024"
+license = "MIT"
+repository = "https://github.com/Rdjjjjj/Lucid"
+
+[workspace.lints.clippy]
+all = "warn"
+
+[workspace.dependencies]
+lucid-core = { path = "crates/lucid-core" }
+lucid-platform = { path = "crates/lucid-platform" }
+
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+thiserror = "2.0.20"
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+tracing-appender = "0.2.5"
+tokio = { version = "1.53.1", features = ["rt", "rt-multi-thread", "macros", "time"] }
+reqwest = { version = "0.13", default-features = false, features = ["json", "rustls", "charset"] }
+
+objc2 = "0.6.4"
+dispatch2 = "0.3.1"
+objc2-foundation = { version = "0.3.2", features = ["NSArray", "NSAttributedString", "NSBundle", "NSDictionary", "NSGeometry", "NSObject", "NSProcessInfo", "NSRange", "NSString", "NSTimer", "NSURL", "NSUserDefaults", "NSValue", "NSThread"] }
+objc2-app-kit = { version = "0.3.2", features = ["NSApplication", "NSAttributedString", "NSEvent", "NSBezierPath", "NSColor", "NSFont", "NSGraphics", "NSImage", "NSPanel", "NSResponder", "NSScreen", "NSStatusBar", "NSStatusItem", "NSMenu", "NSMenuItem", "NSTextField", "NSSecureTextField", "NSButton", "NSControl", "NSView", "NSWindow", "NSTextView", "NSScrollView", "NSPopUpButton", "NSRunningApplication", "block2"] }
+objc2-input-method-kit = "0.3.2"
+objc2-core-foundation = { version = "0.3.2", features = ["CFArray", "CFBase", "CFDictionary", "CFNumber", "CFString", "CFURL"] }

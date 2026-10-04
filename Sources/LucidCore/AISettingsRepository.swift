@@ -2,12 +2,12 @@ import Foundation
 
 public struct AISettingsRepository {
     private let defaults: UserDefaults
-    private let keychain: KeychainAPIKeyStore
+    private let keyStore: DefaultsAPIKeyStore
     private let configurationKey = "ai.configuration.v1"
 
-    public init(defaults: UserDefaults, keychain: KeychainAPIKeyStore = KeychainAPIKeyStore()) {
+    public init(defaults: UserDefaults, keyStore: DefaultsAPIKeyStore? = nil) {
         self.defaults = defaults
-        self.keychain = keychain
+        self.keyStore = keyStore ?? DefaultsAPIKeyStore(defaults: defaults)
     }
 
     public func loadConfiguration() throws -> AIConfiguration? {
@@ -21,14 +21,19 @@ public struct AISettingsRepository {
     }
 
     public func saveAPIKey(_ apiKey: String) throws {
-        try keychain.save(apiKey)
+        try keyStore.save(apiKey)
     }
 
     public func hasAPIKey() -> Bool {
-        (try? keychain.read())?.isEmpty == false
+        sharedAPIKey() != nil
     }
 
     public func clearAPIKey() throws {
-        try keychain.delete()
+        try keyStore.delete()
+    }
+
+    /// Key stored with the app settings. Never touches the keychain.
+    public func sharedAPIKey() -> String? {
+        try? keyStore.read()
     }
 }

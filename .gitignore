@@ -26,3 +26,6 @@ xcuserdata/
 
 # Xcode 本地用户数据（包括嵌套目录）
 *.xcuserdatad/
+
+# Rust
+target/

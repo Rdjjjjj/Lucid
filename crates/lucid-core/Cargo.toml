@@ -1,0 +1,16 @@
+[package]
+name = "lucid-core"
+description = "Lucid 的平台无关核心：句末状态机、已提交文本替换、AI 协议适配"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+reqwest.workspace = true
+
+[lints]
+workspace = true
