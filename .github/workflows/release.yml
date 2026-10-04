@@ -20,16 +20,19 @@ jobs:
           TAG_NAME: ${{ github.ref_name }}
         run: |
           version="${TAG_NAME#v}"
-          app_version=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' LucidApp/Info.plist)
-          input_method_version=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' LucidInputMethod/Info.plist)
+          app_version=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' apps/macos/Info.plist)
+          for plist in apps/macos/SettingsInfo.plist LucidApp/Info.plist LucidInputMethod/Info.plist; do
+            actual=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$plist")
+            [[ "$actual" == "$app_version" ]] || { echo "$plist version $actual does not match $app_version"; exit 1; }
+          done
           [[ "$version" == "$app_version" ]] || { echo "Tag $TAG_NAME does not match app version $app_version"; exit 1; }
-          [[ "$app_version" == "$input_method_version" ]] || { echo "App/input method versions differ"; exit 1; }
 
       - name: Check public-release hygiene
         run: ./scripts/check-public-release.sh
 
       - name: Run tests
         run: |
+          cargo test --workspace
           swift test
           xcodebuild -project Lucid.xcodeproj -scheme LucidApp -configuration Debug -sdk macosx -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO test
 

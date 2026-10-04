@@ -104,11 +104,13 @@ PY
 fi
 
 # Release metadata must stay aligned between the settings app and input method.
-APP_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ROOT_DIR/LucidApp/Info.plist")"
-INPUT_METHOD_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ROOT_DIR/LucidInputMethod/Info.plist")"
-if [[ "$APP_VERSION" != "$INPUT_METHOD_VERSION" ]]; then
-  report_failure "version mismatch: LucidApp=$APP_VERSION, LucidInputMethod=$INPUT_METHOD_VERSION"
-fi
+APP_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ROOT_DIR/apps/macos/Info.plist")"
+for plist in "$ROOT_DIR/apps/macos/SettingsInfo.plist" "$ROOT_DIR/LucidApp/Info.plist" "$ROOT_DIR/LucidInputMethod/Info.plist"; do
+  actual="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$plist")"
+  if [[ "$actual" != "$APP_VERSION" ]]; then
+    report_failure "version mismatch: $plist=$actual, expected $APP_VERSION"
+  fi
+done
 
 # Public source must not accidentally contain generated release/build files.
 while IFS= read -r path; do

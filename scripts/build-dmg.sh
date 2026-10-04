@@ -2,88 +2,20 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-BUILD_DIR="$ROOT_DIR/build/ReleaseDerivedData"
 DIST_DIR="$ROOT_DIR/dist"
-COMPONENT_PLIST="$ROOT_DIR/build/components.plist"
-VERSION="${VERSION:-$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ROOT_DIR/LucidApp/Info.plist")}"
-IDENTIFIER="io.github.rdj.lucid.installer"
+VERSION="${VERSION:-$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ROOT_DIR/apps/macos/Info.plist")}"
 PKG_PATH="$DIST_DIR/Lucid-$VERSION.pkg"
 if [[ ! "$VERSION" =~ '^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$' ]]; then
   print -u2 "Invalid VERSION: $VERSION"
   exit 1
 fi
-INPUT_METHOD_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ROOT_DIR/LucidInputMethod/Info.plist")"
-if [[ "$INPUT_METHOD_VERSION" != "$VERSION" ]]; then
-  print -u2 "Version mismatch: LucidApp=$VERSION, LucidInputMethod=$INPUT_METHOD_VERSION"
-  exit 1
-fi
 
-mkdir -p "$ROOT_DIR/build" "$DIST_DIR"
+for plist in "$ROOT_DIR/apps/macos/Info.plist" "$ROOT_DIR/apps/macos/SettingsInfo.plist" "$ROOT_DIR/LucidApp/Info.plist" "$ROOT_DIR/LucidInputMethod/Info.plist"; do
+  actual="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$plist")"
+  [[ "$actual" == "$VERSION" ]] || { print -u2 "Version mismatch: $plist=$actual, expected $VERSION"; exit 1; }
+done
 
-# The temporary staging directory is cleaned automatically, including on build failure.
-STAGE_DIR="$(mktemp -d "$ROOT_DIR/build/package-root.XXXXXX")"
-cleanup() {
-  /bin/rm -rf "$STAGE_DIR"
-}
-trap cleanup EXIT
-
-# Build universal binaries (Apple Silicon + Intel) without a developer certificate.
-xcodebuild \
-  -project "$ROOT_DIR/Lucid.xcodeproj" \
-  -scheme LucidApp \
-  -configuration Release \
-  -sdk macosx \
-  -arch arm64 -arch x86_64 \
-  -derivedDataPath "$BUILD_DIR" \
-  build CODE_SIGNING_ALLOWED=NO
-
-xcodebuild \
-  -project "$ROOT_DIR/Lucid.xcodeproj" \
-  -scheme LucidInputMethod \
-  -configuration Release \
-  -sdk macosx \
-  -arch arm64 -arch x86_64 \
-  -derivedDataPath "$BUILD_DIR" \
-  build CODE_SIGNING_ALLOWED=NO
-
-assert_universal_binary() {
-  local binary="$1"
-  local architectures
-  [[ -f "$binary" ]] || { print -u2 "Missing build output: $binary"; exit 1; }
-  architectures="$(lipo -archs "$binary")"
-  if [[ " $architectures " != *" arm64 "* || " $architectures " != *" x86_64 "* ]]; then
-    print -u2 "Expected arm64+x86_64 universal binary, got '$architectures': $binary"
-    exit 1
-  fi
-}
-
-assert_universal_binary "$BUILD_DIR/Build/Products/Release/Lucid.app/Contents/MacOS/Lucid"
-assert_universal_binary "$BUILD_DIR/Build/Products/Release/LucidInputMethod.app/Contents/MacOS/LucidInputMethod"
-
-mkdir -p "$STAGE_DIR/Applications" "$STAGE_DIR/Library/Input Methods"
-ditto --norsrc "$BUILD_DIR/Build/Products/Release/Lucid.app" "$STAGE_DIR/Applications/Lucid.app"
-ditto --norsrc "$BUILD_DIR/Build/Products/Release/LucidInputMethod.app" "$STAGE_DIR/Library/Input Methods/LucidInputMethod.app"
-find "$STAGE_DIR" -name '._*' -delete
-find "$STAGE_DIR" -name '.DS_Store' -delete
-
-# InputMethodKit requires a complete code signature, including nested frameworks.
-codesign --force --deep --sign - "$STAGE_DIR/Library/Input Methods/LucidInputMethod.app"
-codesign --force --deep --sign - "$STAGE_DIR/Applications/Lucid.app"
-codesign --verify --deep --strict --verbose=1 "$STAGE_DIR/Library/Input Methods/LucidInputMethod.app"
-codesign --verify --deep --strict --verbose=1 "$STAGE_DIR/Applications/Lucid.app"
-
-# Keep release artifacts versioned so the GitHub Release and Homebrew cask URL agree.
-/bin/rm -f "$COMPONENT_PLIST" "$PKG_PATH"
-pkgbuild --analyze --root "$STAGE_DIR" "$COMPONENT_PLIST"
-plutil -replace '0.BundleIsRelocatable' -bool false "$COMPONENT_PLIST"
-plutil -replace '1.BundleIsRelocatable' -bool false "$COMPONENT_PLIST"
-
-pkgbuild \
-  --root "$STAGE_DIR" \
-  --component-plist "$COMPONENT_PLIST" \
-  --identifier "$IDENTIFIER" \
-  --version "$VERSION" \
-  --install-location / \
-  "$PKG_PATH"
-
+mkdir -p "$DIST_DIR"
+"$ROOT_DIR/apps/macos/scripts/package.sh"
+[[ -s "$PKG_PATH" ]] || { print -u2 "Missing package: $PKG_PATH"; exit 1; }
 printf '\nCreated:\n  %s\n' "$PKG_PATH"

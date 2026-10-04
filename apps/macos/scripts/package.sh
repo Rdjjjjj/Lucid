@@ -32,8 +32,10 @@ cleanup() {
 }
 trap cleanup EXIT
 mkdir -p "$WORK/root/Library/Input Methods" "$WORK/root/Applications" "$WORK/scripts" "$ROOT/dist"
-ditto --norsrc "$INPUT_APP" "$WORK/root/Library/Input Methods/LucidInputMethod.app"
-ditto --norsrc "$SETTINGS_APP" "$WORK/root/Applications/Lucid.app"
+COPYFILE_DISABLE=1 ditto --norsrc "$INPUT_APP" "$WORK/root/Library/Input Methods/LucidInputMethod.app"
+COPYFILE_DISABLE=1 ditto --norsrc "$SETTINGS_APP" "$WORK/root/Applications/Lucid.app"
+find "$WORK/root" -name '._*' -delete
+find "$WORK/root" -name '.DS_Store' -delete
 cat > "$WORK/scripts/postinstall" <<'POST'
 #!/bin/bash
 set -eu
@@ -64,7 +66,7 @@ for component in components:
 with open(path, 'wb') as file:
     plistlib.dump(components, file)
 PYPLIST
-pkgbuild --root "$WORK/root" --component-plist "$WORK/components.plist" --install-location / --identifier io.github.rdj.lucid.installer --version "$VERSION" --scripts "$WORK/scripts" "$ROOT/dist/Lucid-$VERSION.pkg"
+COPYFILE_DISABLE=1 pkgbuild --root "$WORK/root" --component-plist "$WORK/components.plist" --install-location / --identifier io.github.rdj.lucid.installer --version "$VERSION" --scripts "$WORK/scripts" "$ROOT/dist/Lucid-$VERSION.pkg"
 echo "安装包：$ROOT/dist/Lucid-$VERSION.pkg"
 
 # Do not leave bundle-shaped build artifacts for LaunchServices to rediscover.
