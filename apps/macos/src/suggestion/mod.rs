@@ -23,6 +23,7 @@ struct PanelState {
     window: Retained<NSPanel>,
     replacement: Option<String>,
     original: Option<String>,
+    chinese: Option<String>,
     actions: Vec<Retained<SuggestionAction>>,
 }
 
@@ -43,6 +44,8 @@ define_class!(
             tracing::info!(kind = self.ivars().kind, "建议按钮被点击");
             if self.ivars().kind == "replace" {
                 host::apply_current_suggestion();
+            } else if self.ivars().kind == "flip_chinese" {
+                host::trigger_flip_to_chinese();
             } else {
                 host::keep_original();
             }
@@ -52,18 +55,58 @@ define_class!(
     unsafe impl NSObjectProtocol for SuggestionAction {}
 );
 
+define_class!(
+    #[unsafe(super(NSPanel))]
+    #[thread_kind = MainThreadOnly]
+    #[name = "LucidSuggestionWindow"]
+    #[ivars = ()]
+    struct SuggestionWindow;
+
+    impl SuggestionWindow {
+        #[unsafe(method(canBecomeKeyWindow))]
+        fn can_become_key_window(&self) -> bool {
+            false
+        }
+
+        #[unsafe(method(canBecomeMainWindow))]
+        fn can_become_main_window(&self) -> bool {
+            false
+        }
+    }
+
+    unsafe impl NSObjectProtocol for SuggestionWindow {}
+);
+
+define_class!(
+    #[unsafe(super(NSButton))]
+    #[thread_kind = MainThreadOnly]
+    #[name = "LucidFirstMouseButton"]
+    #[ivars = ()]
+    struct FirstMouseButton;
+
+    impl FirstMouseButton {
+        #[unsafe(method(acceptsFirstMouse:))]
+        fn accepts_first_mouse(&self, _event: Option<&NSEvent>) -> bool {
+            true
+        }
+    }
+
+    unsafe impl NSObjectProtocol for FirstMouseButton {}
+);
+
+
 pub struct SuggestionPanel;
 
 impl SuggestionPanel {
     pub fn show_status(text: &str) {
         let text = text.to_owned();
-        on_main(move || Self::present(&text, None, None));
+        on_main(move || Self::present(&text, None, None, None));
     }
 
-    pub fn show_suggestion(original: &str, replacement: &str) {
+    pub fn show_suggestion(original: &str, replacement: &str, chinese: Option<String>) {
         let original = original.to_owned();
         let replacement = replacement.to_owned();
-        on_main(move || Self::present(&replacement.clone(), Some(original), Some(replacement)));
+        on_main(move || Self::present(&replacement.clone(), Some(original), Some(replacement), chinese));
     }
 
     pub fn hide() {
@@ -87,15 +130,131 @@ impl SuggestionPanel {
         })
     }
 
-    pub fn take_current() -> Option<(String, String)> {
+    pub fn take_current() -> Option<(String, String, Option<String>)> {
         PANEL.with(|panel| {
             let state = panel.borrow();
             let state = state.as_ref()?;
-            Some((state.original.clone()?, state.replacement.clone()?))
+            Some((state.original.clone()?, state.replacement.clone()?, state.chinese.clone()))
         })
     }
 
-    fn present(text: &str, original: Option<String>, replacement: Option<String>) {
+    pub fn show_flip_mode(chinese: &str) {
+        let chinese = chinese.to_owned();
+        on_main(move || Self::present_flip(&chinese));
+    }
+
+    fn present_flip(chinese: &str) {
+        let Some(mtm) = MainThreadMarker::new() else {
+            return;
+        };
+
+        let generation = PANEL_GENERATION.with(|generation| {
+            let next = generation.get().wrapping_add(1);
+            generation.set(next);
+            next
+        });
+        PANEL.with(|panel| {
+            if let Some(state) = panel.borrow_mut().take() {
+                state.window.orderOut(None);
+            }
+        });
+
+        let style = NSWindowStyleMask::Titled
+            | NSWindowStyleMask::NonactivatingPanel
+            | NSWindowStyleMask::UtilityWindow;
+        let chinese_chars = chinese.chars().count();
+        let width = ((chinese_chars as f64) * 13.0 + 90.0).clamp(220.0, 380.0);
+        let height = 38.0;
+
+        let window = unsafe {
+            let this = SuggestionWindow::alloc(mtm).set_ivars(());
+            let raw: Retained<SuggestionWindow> = msg_send![
+                super(this),
+                initWithContentRect: NSRect::new(NSPoint::new(0.0, 0.0), NSSize::new(width, height)),
+                styleMask: style,
+                backing: NSBackingStoreType::Buffered,
+                defer: false
+            ];
+            Retained::into_super(raw)
+        };
+        window.setFloatingPanel(true);
+        window.setLevel(objc2_app_kit::NSFloatingWindowLevel);
+        window.setHidesOnDeactivate(false);
+        window.setIgnoresMouseEvents(false);
+        window.setTitle(&NSString::from_str("转为中文"));
+
+        let flip_action = action(mtm, "flip_chinese");
+        let btn_title = format!("🇨🇳 转为中文: {}", chinese);
+        let flip_btn: Retained<NSButton> = unsafe {
+            let this = FirstMouseButton::alloc(mtm).set_ivars(());
+            let btn: Retained<FirstMouseButton> = msg_send![super(this), init];
+            btn.setTitle(&NSString::from_str(&btn_title));
+            btn.setTarget(Some(&flip_action));
+            btn.setAction(Some(sel!(pressed:)));
+            Retained::into_super(btn)
+        };
+        flip_btn.setFrame(NSRect::new(NSPoint::new(6.0, 5.0), NSSize::new(width - 12.0, 28.0)));
+
+        if let Some(content) = window.contentView() {
+            content.addSubview(&flip_btn);
+        }
+
+        let mouse_loc = NSEvent::mouseLocation();
+        let screen = NSScreen::mainScreen(mtm);
+        let screen_frame = screen.map(|s| s.visibleFrame()).unwrap_or(NSRect::new(
+            NSPoint::new(0.0, 0.0),
+            NSSize::new(1920.0, 1080.0),
+        ));
+
+        // 按钮中心与鼠标指针重合：按钮在 content view 中中心是 (width / 2.0, 19.0)
+        let frame_size = window.frame().size;
+        let mut x = mouse_loc.x - (width / 2.0);
+        let mut y = mouse_loc.y - 19.0;
+
+        let min_x = screen_frame.origin.x + 8.0;
+        let max_x = screen_frame.origin.x + screen_frame.size.width - frame_size.width - 8.0;
+        let min_y = screen_frame.origin.y + 8.0;
+        let max_y = screen_frame.origin.y + screen_frame.size.height - frame_size.height - 8.0;
+
+        x = x.clamp(min_x, max_x.max(min_x));
+        y = y.clamp(min_y, max_y.max(min_y));
+
+        window.setFrameOrigin(NSPoint::new(x, y));
+        window.setBecomesKeyOnlyIfNeeded(true);
+        window.orderFrontRegardless();
+
+        PANEL.with(|panel| {
+            std::mem::forget(flip_action.clone());
+            *panel.borrow_mut() = Some(PanelState {
+                window,
+                replacement: None,
+                original: None,
+                chinese: Some(chinese.to_owned()),
+                actions: vec![flip_action],
+            });
+        });
+
+        // 10秒后自动淡出
+        let _ = DispatchQueue::main().after(DispatchTime::NOW.time(10_000_000_000), move || {
+            PANEL_GENERATION.with(|current| {
+                if current.get() != generation {
+                    return;
+                }
+                PANEL.with(|panel| {
+                    if let Some(state) = panel.borrow_mut().take() {
+                        state.window.orderOut(None);
+                    }
+                });
+            });
+        });
+    }
+
+    fn present(
+        text: &str,
+        original: Option<String>,
+        replacement: Option<String>,
+        chinese: Option<String>,
+    ) {
         tracing::info!(
             has_replacement = replacement.is_some(),
             chars = text.chars().count(),
@@ -137,13 +296,17 @@ impl SuggestionPanel {
         let style = NSWindowStyleMask::Titled
             | NSWindowStyleMask::NonactivatingPanel
             | NSWindowStyleMask::UtilityWindow;
-        let window = NSPanel::initWithContentRect_styleMask_backing_defer(
-            NSPanel::alloc(mtm),
-            NSRect::new(NSPoint::new(0.0, 0.0), NSSize::new(width, height)),
-            style,
-            NSBackingStoreType::Buffered,
-            false,
-        );
+        let window = unsafe {
+            let this = SuggestionWindow::alloc(mtm).set_ivars(());
+            let raw: Retained<SuggestionWindow> = msg_send![
+                super(this),
+                initWithContentRect: NSRect::new(NSPoint::new(0.0, 0.0), NSSize::new(width, height)),
+                styleMask: style,
+                backing: NSBackingStoreType::Buffered,
+                defer: false
+            ];
+            Retained::into_super(raw)
+        };
         window.setFloatingPanel(true);
         // 不要使用 NSScreenSaverWindowLevel：它会压住其他应用，像“卡死”一样。
         window.setLevel(objc2_app_kit::NSFloatingWindowLevel);
@@ -178,21 +341,21 @@ impl SuggestionPanel {
             if is_suggestion {
                 let replace_action = action(mtm, "replace");
                 let keep_action = action(mtm, "keep");
-                let replace = unsafe {
-                    NSButton::buttonWithTitle_target_action(
-                        &NSString::from_str("使用英文"),
-                        Some(&replace_action),
-                        Some(sel!(pressed:)),
-                        mtm,
-                    )
+                let replace: Retained<NSButton> = unsafe {
+                    let this = FirstMouseButton::alloc(mtm).set_ivars(());
+                    let btn: Retained<FirstMouseButton> = msg_send![super(this), init];
+                    btn.setTitle(&NSString::from_str("使用英文"));
+                    btn.setTarget(Some(&replace_action));
+                    btn.setAction(Some(sel!(pressed:)));
+                    Retained::into_super(btn)
                 };
-                let keep = unsafe {
-                    NSButton::buttonWithTitle_target_action(
-                        &NSString::from_str("保留原文"),
-                        Some(&keep_action),
-                        Some(sel!(pressed:)),
-                        mtm,
-                    )
+                let keep: Retained<NSButton> = unsafe {
+                    let this = FirstMouseButton::alloc(mtm).set_ivars(());
+                    let btn: Retained<FirstMouseButton> = msg_send![super(this), init];
+                    btn.setTitle(&NSString::from_str("保留原文"));
+                    btn.setTarget(Some(&keep_action));
+                    btn.setAction(Some(sel!(pressed:)));
+                    Retained::into_super(btn)
                 };
                 let btn_spacing = 8.0;
                 let btn_margin = 10.0;
@@ -216,12 +379,11 @@ impl SuggestionPanel {
         let origin = host::suggestion_origin(frame.size.width, frame.size.height)
             .unwrap_or_else(|| panel_origin(frame.size.height, frame.size.width));
         window.setFrameOrigin(origin);
-        // A nonactivating panel can still receive button clicks, but merely
-        // ordering it to the front is not enough on every macOS host: AppKit
-        // may leave the panel non-key, so the first button press is swallowed.
-        // Make this transient panel key without activating a separate app.
-        window.setBecomesKeyOnlyIfNeeded(false);
-        window.makeKeyAndOrderFront(None);
+        // 建议面板决不能成为 Key Window，否则会剥夺宿主文本输入框的焦点，导致用户替换后无法继续打字。
+        // 通过重写 FirstMouseButton 的 acceptsFirstMouse: 确保鼠标第一次点击直接触发，
+        // 同时窗口使用 orderFrontRegardless() 仅浮于上层，绝不夺取系统的键盘焦点。
+        window.setBecomesKeyOnlyIfNeeded(true);
+        window.orderFrontRegardless();
         PANEL.with(|panel| {
             for action in &actions {
                 std::mem::forget(action.clone());
@@ -230,6 +392,7 @@ impl SuggestionPanel {
                 window,
                 replacement,
                 original,
+                chinese,
                 actions,
             });
         });

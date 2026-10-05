@@ -85,7 +85,7 @@ pub fn request_correction(sentence: String, request_id: u64, host: String) {
                 } else if rewritten == sentence {
                     SuggestionPanel::hide();
                 } else {
-                    SuggestionPanel::show_suggestion(&sentence, &rewritten);
+                    SuggestionPanel::show_suggestion(&sentence, &rewritten, result.chinese_text);
                 }
             }
             Err(error) => {
@@ -103,6 +103,7 @@ pub fn replacement_range(original: &str, selected: Option<Utf16Range>) -> Option
 
 /// 丢弃上一个文本框的会话和异步请求，避免把 A 应用里的原文拿去替换 B 应用。
 pub fn reset_active_context() {
+    clear_flip_state();
     ACTIVE_REQUEST.fetch_add(1, Ordering::SeqCst);
     accessibility::take_active_editor();
     if let Ok(mut slot) = SHARED_SESSION.lock() {
@@ -196,18 +197,104 @@ pub fn remember_client(client: &objc2::runtime::AnyObject, range: Option<lucid_c
     }
 }
 
+struct FlipToChineseState {
+    english_text: String,
+    chinese_text: String,
+}
+
+static FLIP_STATE: std::sync::Mutex<Option<FlipToChineseState>> = std::sync::Mutex::new(None);
+
+pub fn set_flip_to_chinese_state(
+    english: String,
+    chinese: String,
+) {
+    if let Ok(mut slot) = FLIP_STATE.lock() {
+        tracing::info!(english = %english, chinese = %chinese, "已激活鼠标左键翻转为中文状态");
+        *slot = Some(FlipToChineseState {
+            english_text: english,
+            chinese_text: chinese,
+        });
+    }
+}
+
+pub fn clear_flip_state() {
+    if let Ok(mut slot) = FLIP_STATE.lock() {
+        if slot.is_some() {
+            *slot = None;
+        }
+    }
+}
+
+pub fn trigger_flip_to_chinese() {
+    let state = {
+        let mut slot = match FLIP_STATE.lock() {
+            Ok(guard) => guard,
+            Err(_) => return,
+        };
+        slot.take()
+    };
+    let Some(state) = state else {
+        SuggestionPanel::hide();
+        return;
+    };
+
+    tracing::info!(english = %state.english_text, chinese = %state.chinese_text, "鼠标/触控板点击触发翻转为中文");
+    SuggestionPanel::hide();
+
+    let client = CURRENT_CLIENT.with(|slot| slot.borrow().clone());
+    let Some(client) = client else {
+        tracing::warn!("翻转失败：未找到当前输入框");
+        return;
+    };
+    let text_client = crate::imk::TextClient::new(&client);
+    execute_flip_replacement(&text_client, &state.english_text, &state.chinese_text);
+}
+
+fn execute_flip_replacement(
+    client: &crate::imk::TextClient<'_>,
+    original: &str,
+    replacement: &str,
+) {
+    let host_id = CURRENT_HOST_ID
+        .with(|slot| slot.borrow().clone())
+        .unwrap_or_default();
+    let text_client_host = client.bundle_identifier();
+    let front_id = objc2_app_kit::NSWorkspace::sharedWorkspace()
+        .frontmostApplication()
+        .and_then(|app| app.bundleIdentifier().map(|v| v.to_string()))
+        .unwrap_or_default();
+    let is_wechat = host_id == "com.tencent.xinWeChat"
+        || text_client_host == "com.tencent.xinWeChat"
+        || front_id == "com.tencent.xinWeChat";
+
+    let outcome = if is_wechat {
+        replace_in_wechat(client, original, replacement, None)
+    } else {
+        replace_with_client(client, original, replacement, None)
+    };
+    tracing::info!(?outcome, is_wechat, "鼠标点击翻转为中文替换结果");
+    activate_host();
+}
+
 pub fn apply_current_suggestion() {
     tracing::info!("用户点击使用英文");
-    let Some((original, replacement)) = SuggestionPanel::take_current() else {
+    let Some((original, replacement, chinese)) = SuggestionPanel::take_current() else {
         tracing::warn!("点击使用英文时没有可用的建议");
         return;
     };
-    SuggestionPanel::hide();
     activate_host();
 
     let range = PENDING_RANGE.lock().ok().and_then(|slot| *slot);
-    let _ = DispatchQueue::main().after(DispatchTime::NOW.time(100_000_000), move || {
+    let english_for_flip = replacement.clone();
+    let _ = DispatchQueue::main().after(DispatchTime::NOW.time(50_000_000), move || {
         apply_saved_suggestion(original, replacement, range);
+        activate_host();
+        if let Some(chinese) = chinese {
+            set_flip_to_chinese_state(english_for_flip, chinese.clone());
+            SuggestionPanel::show_flip_mode(&chinese);
+        } else {
+            SuggestionPanel::hide();
+        }
     });
 }
 
@@ -301,6 +388,7 @@ pub fn keep_original() {
     }
     remember_range(None);
     SuggestionPanel::hide();
+    activate_host();
 }
 
 /// Finds a screen-space anchor for the suggestion card. NSTextInputClient owns
@@ -1169,6 +1257,7 @@ fn is_sentence_delimiter(units: &[u16], index: usize) -> bool {
 }
 
 pub fn delete_shared_backward() {
+    clear_flip_state();
     if let Ok(mut slot) = SHARED_SESSION.lock() {
         slot.get_or_insert_with(crate::imk::InputSession::new)
             .delete_backward();
@@ -1176,11 +1265,13 @@ pub fn delete_shared_backward() {
 }
 
 pub fn cancel_suggestion() {
+    clear_flip_state();
     ACTIVE_REQUEST.fetch_add(1, Ordering::SeqCst);
     SuggestionPanel::hide();
 }
 
 pub fn reset_shared() {
+    clear_flip_state();
     if let Ok(mut slot) = SHARED_SESSION.lock() {
         if let Some(session) = slot.as_mut() {
             session.reset();

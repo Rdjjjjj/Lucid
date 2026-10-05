@@ -206,6 +206,8 @@ impl LucidInputController {
         if !is_insertable(text) {
             return false;
         }
+
+        host::clear_flip_state();
         SuggestionPanel::hide();
 
         let is_terminator = text.chars().any(|c| ".!?。？！".contains(c));
