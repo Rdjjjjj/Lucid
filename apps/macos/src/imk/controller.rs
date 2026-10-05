@@ -145,12 +145,14 @@ define_class!(
 
 pub struct ControllerState {
     session: InputSession,
+    host_id: Option<String>,
 }
 
 impl ControllerState {
     fn new() -> Self {
         Self {
             session: InputSession::new(),
+            host_id: None,
         }
     }
 }
@@ -163,15 +165,23 @@ impl LucidInputController {
         flags: usize,
         client: TextClient<'_>,
     ) -> bool {
-        if client.is_sensitive_input() {
+        let host_id = {
+            let mut state = self.ivars().borrow_mut();
+            if let Some(id) = state.host_id.clone() {
+                id
+            } else {
+                let id = client.bundle_identifier();
+                state.host_id = Some(id.clone());
+                id
+            }
+        };
+
+        if crate::imk::is_authentication_host(&host_id) || crate::imk::secure_input_enabled() {
             host::reset_active_context();
             SuggestionPanel::hide();
             return false;
         }
-        let host_id = client.bundle_identifier();
-        // Character counts are sufficient for diagnostics; key codes can
-        // reconstruct private text and must not be persisted.
-        tracing::info!(host = %host_id, chars = text.chars().count(), "inputText");
+
         if text.is_empty() {
             return false;
         }
@@ -197,23 +207,26 @@ impl LucidInputController {
             return false;
         }
         SuggestionPanel::hide();
-        let selected_before_insert = client.selected_range();
+
+        let is_terminator = text.chars().any(|c| ".!?。？！".contains(c));
+        // 只有在句末标点时才跨进程查询选区，常规输入跳过 IPC 查询以保证打字绝对零延迟
+        let selected_before_insert = if is_terminator {
+            client.selected_range()
+        } else {
+            None
+        };
+
         let is_duplicate = {
             let mut state = self.ivars().borrow_mut();
             state.session.cancel_pause();
             state.session.should_ignore_duplicate(text, key_code)
         };
         if is_duplicate {
-            // A few IMK hosts deliver the same physical key through both
-            // handleEvent: and inputText:. We already inserted it on the first
-            // callback; returning YES here prevents the host from inserting a
-            // second copy itself.
-            tracing::debug!(host = %host_id, "忽略重复按键");
             return true;
         }
         client.insert_text(text, None);
         host::note_inserted(text, &host_id, selected_before_insert);
-        tracing::info!(host = %host_id, chars = text.chars().count(), "已上屏");
+        tracing::debug!(host = %host_id, chars = text.chars().count(), "已上屏");
         true
     }
 }

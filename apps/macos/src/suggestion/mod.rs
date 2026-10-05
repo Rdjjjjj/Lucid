@@ -107,11 +107,19 @@ impl SuggestionPanel {
         };
         let is_suggestion = replacement.is_some();
         let (width, height) = if is_suggestion {
-            // Keep the result card compact; the sentence itself remains readable
-            // while the card no longer dominates the editor window.
-            (320.0, 118.0)
+            let text_len = text.chars().count();
+            if text_len <= 20 {
+                // 短句（如 Thank you. / Hello. / Good morning.）
+                (220.0, 78.0)
+            } else if text_len <= 50 {
+                // 中等长度句子
+                (250.0, 84.0)
+            } else {
+                // 较长句子
+                (280.0, 94.0)
+            }
         } else {
-            (280.0, 56.0)
+            (200.0, 42.0)
         };
 
         // 先关闭旧面板，避免“正在改写”面板和结果面板叠在一起。
@@ -148,16 +156,17 @@ impl SuggestionPanel {
         }));
 
         let (label_origin, label_size, font_size) = if is_suggestion {
+            let label_h = (height - 38.0).max(24.0);
             (
-                NSPoint::new(14.0, 56.0),
-                NSSize::new(width - 28.0, 40.0),
-                15.0,
+                NSPoint::new(10.0, height - label_h - 4.0),
+                NSSize::new(width - 20.0, label_h),
+                13.5,
             )
         } else {
             (
-                NSPoint::new(14.0, 11.0),
-                NSSize::new(width - 28.0, 28.0),
-                13.0,
+                NSPoint::new(10.0, 8.0),
+                NSSize::new(width - 20.0, height - 16.0),
+                12.0,
             )
         };
         let label = NSTextField::wrappingLabelWithString(&NSString::from_str(text), mtm);
@@ -185,13 +194,18 @@ impl SuggestionPanel {
                         mtm,
                     )
                 };
+                let btn_spacing = 8.0;
+                let btn_margin = 10.0;
+                let btn_width = ((width - btn_margin * 2.0 - btn_spacing) / 2.0).floor();
+                let btn_height = 24.0;
+                let btn_y = 7.0;
                 replace.setFrame(NSRect::new(
-                    NSPoint::new(14.0, 12.0),
-                    NSSize::new(138.0, 30.0),
+                    NSPoint::new(btn_margin, btn_y),
+                    NSSize::new(btn_width, btn_height),
                 ));
                 keep.setFrame(NSRect::new(
-                    NSPoint::new(168.0, 12.0),
-                    NSSize::new(138.0, 30.0),
+                    NSPoint::new(btn_margin + btn_width + btn_spacing, btn_y),
+                    NSSize::new(btn_width, btn_height),
                 ));
                 content.addSubview(&replace);
                 content.addSubview(&keep);

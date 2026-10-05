@@ -80,6 +80,13 @@ impl InputSession {
         self.tracker.pending_text()
     }
 
+    /// UTF-16 units tracked since the session started, including finished
+    /// sentences. Comparing this with the host caret reveals text the host
+    /// committed without delivering it through InputMethodKit.
+    pub fn tracked_origin(&self) -> usize {
+        self.tracked_origin
+    }
+
     pub fn delete_backward(&mut self) {
         if let Some(last) = self.tracker.pending_text().chars().next_back() {
             self.tracker.delete_backward();
@@ -187,6 +194,14 @@ impl InputSession {
     }
 
     pub fn cancel_pause(&mut self) {
+        self.pause_deadline = None;
+    }
+
+    /// 清除 tracker 中正在追踪的暂存文本，并取消停顿计时器。
+    /// 当从宿主直接读回完整句子并完成收束时调用，避免上一句残留在 tracker 中。
+    pub fn reset_tracker(&mut self) {
+        self.tracker.reset();
+        self.tracked_origin = 0;
         self.pause_deadline = None;
     }
 }

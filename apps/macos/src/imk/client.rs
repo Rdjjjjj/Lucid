@@ -4,7 +4,7 @@ use std::ffi::CString;
 
 use objc2::rc::Retained;
 use objc2::runtime::AnyObject;
-use objc2::{msg_send, sel};
+use objc2::msg_send;
 use objc2_foundation::{NSAttributedString, NSNotFound, NSRange, NSRect, NSString};
 
 use lucid_core::Utf16Range;
@@ -103,27 +103,48 @@ impl<'a> TextClient<'a> {
     /// skip this fallback, `insertText(_:replacementRange:)` is accepted by
     /// WeChat as an append, producing `nihao.Hello.` instead of a replacement.
     pub fn delete_backward(&self) {
-        self.send_edit_command("deleteBackward:");
+        if !self.do_command_by_selector("deleteBackward:") {
+            self.send_edit_command("deleteBackward:");
+        }
     }
 
     /// Prefer deleting an active selection. WeChat's IMK proxy can report
     /// `deleteBackward:` while ignoring that message, but still forwards `delete:`
     /// once the original sentence is selected.
     pub fn delete_selection_or_backward(&self) {
-        if self.selected_range().is_some_and(|range| range.length > 0)
-            && self.responds_to("delete:")
-        {
-            self.send_edit_command("delete:");
-            return;
+        if self.selected_range().is_some_and(|range| range.length > 0) {
+            if self.do_command_by_selector("delete:") {
+                return;
+            }
+            if self.responds_to("delete:") {
+                self.send_edit_command("delete:");
+                return;
+            }
         }
-        self.send_edit_command("deleteBackward:");
+        self.delete_backward();
+    }
+
+    pub fn do_command_by_selector(&self, command: &str) -> bool {
+        if !self.responds_to("doCommandBySelector:") {
+            return false;
+        }
+        let name = CString::new(command).expect("selector");
+        let command_sel = objc2::runtime::Sel::register(&name);
+        unsafe {
+            let _: () = msg_send![self.object, doCommandBySelector: command_sel];
+        }
+        true
     }
 
     fn send_edit_command(&self, command: &str) {
         let before = self.selected_range();
         let name = CString::new(command).expect("selector");
         let command_sel = objc2::runtime::Sel::register(&name);
-        if self.responds_to(command) {
+        if self.responds_to("doCommandBySelector:") {
+            unsafe {
+                let _: () = msg_send![self.object, doCommandBySelector: command_sel];
+            }
+        } else if self.responds_to(command) {
             let sent = unsafe {
                 match command {
                     "delete:" => {
@@ -140,10 +161,6 @@ impl<'a> TextClient<'a> {
             if !sent {
                 tracing::info!(command, ?before, "未识别的宿主删除命令");
                 return;
-            }
-        } else if self.responds_to("doCommandBySelector:") {
-            unsafe {
-                let _: () = msg_send![self.object, doCommandBySelector: command_sel];
             }
         } else {
             tracing::info!(command, ?before, "宿主不支持删除命令");
