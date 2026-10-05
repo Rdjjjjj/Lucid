@@ -4,54 +4,56 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>zh-Hans</string>
+	<key>CFBundleDisplayName</key>
+	<string>Lucid</string>
 	<key>CFBundleExecutable</key>
 	<string>LucidInputMethod</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
 	<string>io.github.rdj.inputmethod.lucid</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>Lucid</string>
-	<key>CFBundleDisplayName</key>
-	<string>Lucid</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
-	<key>CFBundleIconFile</key>
-	<string>AppIcon</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.2.10</string>
+	<string>0.2.11</string>
 	<key>CFBundleVersion</key>
-	<string>35</string>
-	<key>LSApplicationCategoryType</key>
-	<string>public.app-category.utilities</string>
-	<key>LSBackgroundOnly</key>
-	<true/>
-	<key>LSUIElement</key>
-	<true/>
-	<key>LSMinimumSystemVersion</key>
-	<string>13.0</string>
-	<key>NSHighResolutionCapable</key>
-	<true/>
-	<key>NSPrincipalClass</key>
-	<string>NSApplication</string>
-	<key>TISIntendedLanguage</key>
-	<string>zh-Hans</string>
-	<key>LSHasLocalizedDisplayName</key>
-	<true/>
-	<key>InputMethodType</key>
-	<string>Keyboard</string>
+	<string>36</string>
 	<key>InputMethodConnectionName</key>
 	<string>io.github.rdj.inputmethod.lucid_Connection</string>
 	<key>InputMethodServerControllerClass</key>
 	<string>LucidInputController</string>
 	<key>InputMethodServerDelegateClass</key>
 	<string>LucidInputController</string>
+	<key>InputMethodType</key>
+	<string>Keyboard</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.utilities</string>
+	<key>LSBackgroundOnly</key>
+	<true/>
+	<key>LSHasLocalizedDisplayName</key>
+	<true/>
+	<key>LSMinimumSystemVersion</key>
+	<string>13.0</string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>LucidAppGroup</key>
+	<string>group.io.github.rdj.lucid</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
 	<key>TICapsLockLanguageSwitchCapable</key>
+	<true/>
+	<key>TISIconIsTemplate</key>
 	<true/>
 	<key>TISInputSourceID</key>
 	<string>io.github.rdj.inputmethod.lucid</string>
-	<key>TISIconIsTemplate</key>
-	<true/>
+	<key>TISIntendedLanguage</key>
+	<string>zh-Hans</string>
 	<key>tsInputMethodCharacterRepertoireKey</key>
 	<array>
 		<string>Hans</string>
@@ -59,7 +61,5 @@
 	</array>
 	<key>tsInputMethodIconFileKey</key>
 	<string>menu_icon.pdf</string>
-	<key>LucidAppGroup</key>
-	<string>group.io.github.rdj.lucid</string>
 </dict>
 </plist>
