@@ -1,0 +1,36 @@
+{
+  "method": "Deterministic cross-check generated from the checked-in REA evidence and official release metadata; does not prove provenance or runtime behavior.",
+  "source_evidence": [
+    "macho-input.json",
+    "rust-input.json",
+    "artifact-app.json",
+    "resources.json",
+    "build-info.json",
+    "SHA256SUMS"
+  ],
+  "checks": {
+    "package_sha256": {
+      "observed": "7b3c23361642d59bb914c89a5ab3314a3ff4eb40e71e5242e54ec4467c5cb633",
+      "official": "7b3c23361642d59bb914c89a5ab3314a3ff4eb40e71e5242e54ec4467c5cb633",
+      "match": true
+    },
+    "executable_sha256": {
+      "observed": "62f6de6a59a0606f1be24da35c1a9118e0bf73ba565b422b3757b5bb09949350"
+    },
+    "p2c_model_sha256": {
+      "observed": "4eabcb140b1833ac8bc7afb4f71d3a9ad8db0d9c8073c1890ec96644b6bef973",
+      "official": "4eabcb140b1833ac8bc7afb4f71d3a9ad8db0d9c8073c1890ec96644b6bef973",
+      "match": true
+    },
+    "model_sha256": {
+      "observed": "83ad55abab750dd04bae93b48430981035d6c530d155db719cf1dccd4c07b0ef",
+      "official": "83ad55abab750dd04bae93b48430981035d6c530d155db719cf1dccd4c07b0ef",
+      "match": true
+    },
+    "bundle_id": "app.qingjian.inputmethod",
+    "version": "0.2.1",
+    "build": "369",
+    "source_commit": "f65ea74c9d631f9a7fd47b8725415a88577f80d2"
+  },
+  "all_hash_matches": true
+}

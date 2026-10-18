@@ -8,6 +8,10 @@
 	<string>Lucid</string>
 	<key>CFBundleExecutable</key>
 	<string>Lucid</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
+	<key>CFBundleIconName</key>
+	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
 	<string>io.github.rdj.lucid</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -19,7 +23,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>0.2.11</string>
 	<key>CFBundleVersion</key>
-	<string>36</string>
+	<string>50</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
 	<key>LSMinimumSystemVersion</key>

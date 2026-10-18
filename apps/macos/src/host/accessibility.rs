@@ -51,6 +51,7 @@ unsafe extern "C" {
     fn AXIsProcessTrusted() -> u8;
     fn AXIsProcessTrustedWithOptions(options: Ref) -> u8;
     fn AXUIElementCreateApplication(pid: i32) -> Ref;
+    fn AXUIElementCreateSystemWide() -> Ref;
     fn AXUIElementCopyAttributeValue(element: Ref, name: Ref, value: *mut Ref) -> i32;
     fn AXUIElementCopyParameterizedAttributeValue(
         element: Ref,
@@ -80,7 +81,6 @@ unsafe extern "C" {
     fn CFRetain(value: Ref) -> Ref;
     fn CFArrayGetCount(array: Ref) -> isize;
     fn CFArrayGetValueAtIndex(array: Ref, index: isize) -> Ref;
-    #[allow(dead_code)]
     fn CFEqual(a: Ref, b: Ref) -> u8;
     fn CFGetTypeID(value: Ref) -> usize;
     fn CFStringGetTypeID() -> usize;
@@ -200,7 +200,12 @@ fn parameterized_attribute(element: Ref, name: &str, parameter: Ref) -> Option<O
     let name = NSString::from_str(name);
     let mut value = ptr::null();
     let error = unsafe {
-        AXUIElementCopyParameterizedAttributeValue(element, string_ref(&name), parameter, &mut value)
+        AXUIElementCopyParameterizedAttributeValue(
+            element,
+            string_ref(&name),
+            parameter,
+            &mut value,
+        )
     };
     if error != 0 || value.is_null() {
         return None;
@@ -230,6 +235,15 @@ fn children(element: Ref) -> Vec<Owned> {
 }
 
 fn focused_or_text_editor(app: Ref) -> Option<Owned> {
+    // 微信有时不在应用级 AXFocusedUIElement 上暴露输入框，但系统级
+    // AXFocusedUIElement 仍然能返回真实的聊天编辑器。Editor::capture
+    // 随后会校验元素所属进程，避免误拿到 Lucid 面板或其他应用控件。
+    if let Some(system_wide) = Owned::new(unsafe { AXUIElementCreateSystemWide() })
+        && let Some(focused) = attribute(system_wide.0, "AXFocusedUIElement")
+    {
+        return Some(focused);
+    }
+
     // 1. 尝试直接获取应用级焦点元素
     if let Some(focused) = attribute(app, "AXFocusedUIElement") {
         return Some(focused);
@@ -247,17 +261,21 @@ fn focused_or_text_editor(app: Ref) -> Option<Owned> {
             return Some(focused);
         }
     }
-    tracing::info!(windows = windows.len(), "微信未直接提供焦点元素，深度搜索文本控件");
+    tracing::info!(
+        windows = windows.len(),
+        "微信未直接提供焦点元素，深度搜索文本控件"
+    );
     fn walk(element: Ref, depth: usize, budget: &mut usize) -> Option<Owned> {
         if depth > 8 || *budget == 0 {
             return None;
         }
         *budget -= 1;
         let role = attribute(element, "AXRole").and_then(|v| v.string());
+        // AXFocused is a CFBoolean. Reading it as a string always returned
+        // false for WeChat's custom editor and made the deep search useless.
         let is_focused = attribute(element, "AXFocused")
-            .and_then(|v| v.string())
-            .as_deref()
-            == Some("1");
+            .and_then(|v| v.boolean())
+            .unwrap_or(false);
         let is_text_role = matches!(
             role.as_deref(),
             Some("AXTextArea" | "AXTextField" | "AXComboBox" | "AXWebArea" | "AXGroup")
@@ -431,6 +449,13 @@ impl Editor {
         self.pid
     }
 
+    /// Compare the actual focused accessibility element, rather than the IMK
+    /// proxy object. IMK may create a new proxy for the same field, while two
+    /// fields in one application have different AX elements.
+    pub fn same_element(&self, other: &Self) -> bool {
+        unsafe { CFEqual(self.element.0, other.element.0) != 0 }
+    }
+
     #[allow(dead_code)]
     pub fn current_value(&self) -> Option<String> {
         attribute(self.element.0, "AXValue").and_then(|v| v.string())
@@ -450,8 +475,7 @@ impl Editor {
             return false;
         }
         // 校验选区是否真实生效
-        let current = attribute(self.element.0, "AXSelectedTextRange")
-            .and_then(|v| v.range());
+        let current = attribute(self.element.0, "AXSelectedTextRange").and_then(|v| v.range());
         current == Some(Range { location, length })
     }
 
@@ -536,10 +560,7 @@ fn ax_to_cocoa_rect(
 ) -> objc2_foundation::NSRect {
     let screen_height = primary_screen_height();
     let cocoa_y = screen_height - ax_origin.y - size.height;
-    objc2_foundation::NSRect::new(
-        objc2_foundation::NSPoint::new(ax_origin.x, cocoa_y),
-        size,
-    )
+    objc2_foundation::NSRect::new(objc2_foundation::NSPoint::new(ax_origin.x, cocoa_y), size)
 }
 
 /// 判定候选矩形是否属于微信右下角聊天输入区域。
@@ -612,18 +633,26 @@ impl Editor {
 
     /// 获取建议卡片的最佳视觉锚点矩形。
     /// 针对微信进行几何净化，严禁将弹窗放置在左上角搜索栏或会话列表上。
-    pub fn visual_anchor_rect(&self, range: Option<Utf16Range>) -> Option<objc2_foundation::NSRect> {
+    pub fn visual_anchor_rect(
+        &self,
+        range: Option<Utf16Range>,
+    ) -> Option<objc2_foundation::NSRect> {
         let is_wechat = self.host == "com.tencent.xinWeChat";
         let win_rect = self.window_rect();
 
         // 1. 优先尝试从文字/光标范围获取物理包围盒
         if let Some(r) = range {
             if let Some(caret) = self.caret_rect_for_range(r) {
-                if !is_wechat || win_rect.map_or(true, |w| is_plausible_wechat_input_rect(caret, w)) {
+                if !is_wechat || win_rect.map_or(true, |w| is_plausible_wechat_input_rect(caret, w))
+                {
                     tracing::info!(?caret, "采用精准文字/光标物理包围盒定位");
                     return Some(caret);
                 } else {
-                    tracing::warn!(?caret, ?win_rect, "微信文字包围盒未落在聊天输入区域，已剔除");
+                    tracing::warn!(
+                        ?caret,
+                        ?win_rect,
+                        "微信文字包围盒未落在聊天输入区域，已剔除"
+                    );
                 }
             }
         }
@@ -735,6 +764,12 @@ impl Editor {
             return ReplacementOutcome::Replaced;
         }
 
+        // A write may have changed the document despite an unexpected return
+        // code. Do not cascade into keyboard paste after a partial AX write.
+        if after.as_deref() != Some(&before) {
+            return ReplacementOutcome::Unverified;
+        }
+
         // Compatibility fallback for hosts that do not make AXValue writable
         // but do expose a writable selected-text API.
         let Some(previous) = previous else {
@@ -807,9 +842,7 @@ pub fn wechat_pid() -> Option<i32> {
         .runningApplications()
         .iter()
         .find(|app| {
-            app.bundleIdentifier()
-                .map(|v| v.to_string())
-                .as_deref()
+            app.bundleIdentifier().map(|v| v.to_string()).as_deref()
                 == Some("com.tencent.xinWeChat")
         })
         .map(|app| app.processIdentifier())

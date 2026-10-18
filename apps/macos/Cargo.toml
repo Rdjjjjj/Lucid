@@ -12,6 +12,7 @@ path = "src/main.rs"
 
 [dependencies]
 lucid-core.workspace = true
+lucid-provider-http.workspace = true
 lucid-platform.workspace = true
 objc2.workspace = true
 dispatch2.workspace = true
@@ -25,7 +26,6 @@ thiserror.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
 tokio.workspace = true
-reqwest.workspace = true
 
 [lints]
 workspace = true

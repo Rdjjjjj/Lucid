@@ -2,6 +2,7 @@
 
 use objc2::MainThreadOnly;
 use objc2::rc::Retained;
+use objc2::runtime::AnyObject;
 use objc2::{DefinedClass, MainThreadMarker, define_class, msg_send, sel};
 use objc2_app_kit::{
     NSApplication, NSApplicationActivationPolicy, NSBackingStoreType, NSButton, NSPopUpButton,
@@ -10,6 +11,7 @@ use objc2_app_kit::{
 use objc2_foundation::{NSObject, NSObjectProtocol, NSPoint, NSRect, NSSize, NSString};
 
 use lucid_core::{AiConfiguration, AiProtocol};
+use lucid_provider_http::HttpCorrectionService;
 
 use crate::app::settings::Settings;
 
@@ -51,6 +53,44 @@ define_class!(
         fn fetch_models(&self, _sender: Option<&NSObject>) {
             self.load_model_list();
         }
+
+        #[unsafe(method(pasteApiKey:))]
+        fn paste_api_key(&self, _sender: Option<&NSObject>) {
+            let pboard: *mut AnyObject = unsafe {
+                msg_send![objc2::class!(NSPasteboard), generalPasteboard]
+            };
+            if pboard.is_null() {
+                self.ivars()
+                    .status
+                    .setStringValue(&NSString::from_str("读取剪贴板失败，请直接输入 API Key。"));
+                return;
+            }
+            let type_string: *mut AnyObject = unsafe {
+                msg_send![objc2::class!(NSString), stringWithUTF8String: c"public.utf8-plain-text".as_ptr()]
+            };
+            let value: Option<Retained<NSString>> = unsafe {
+                msg_send![pboard, stringForType: type_string]
+            };
+            let Some(value) = value else {
+                self.ivars()
+                    .status
+                    .setStringValue(&NSString::from_str("剪贴板没有文本内容。"));
+                return;
+            };
+            let value = value.to_string();
+            if value.trim().is_empty() {
+                self.ivars()
+                    .status
+                    .setStringValue(&NSString::from_str("剪贴板没有可用的 API Key。"));
+                return;
+            }
+            self.ivars()
+                .key_field
+                .setStringValue(&NSString::from_str(value.trim()));
+            self.ivars()
+                .status
+                .setStringValue(&NSString::from_str("已从剪贴板填入 API Key，请点击保存设置。"));
+        }
     }
 
     unsafe impl NSObjectProtocol for SettingsController {}
@@ -89,6 +129,10 @@ impl SettingsController {
             NSSize::new(430.0, 28.0),
         ));
         let key_field = secure_field(mtm, NSPoint::new(180.0, 240.0));
+        key_field.setFrame(NSRect::new(
+            NSPoint::new(180.0, 240.0),
+            NSSize::new(330.0, 28.0),
+        ));
         let status = NSTextField::labelWithString(
             &NSString::from_str("填写自己的 AI 服务。句子只发给这个服务。"),
             mtm,
@@ -105,6 +149,7 @@ impl SettingsController {
         content.addSubview(&url_field);
         content.addSubview(&model_popup);
         content.addSubview(&key_field);
+
         content.addSubview(&status);
 
         let this = Self::alloc(mtm).set_ivars(SettingsIvars {
@@ -116,6 +161,19 @@ impl SettingsController {
             status: status.clone(),
         });
         let this: Retained<Self> = unsafe { msg_send![super(this), init] };
+        let paste_key = unsafe {
+            NSButton::buttonWithTitle_target_action(
+                &NSString::from_str("粘贴 API Key"),
+                Some(&this),
+                Some(sel!(pasteApiKey:)),
+                mtm,
+            )
+        };
+        paste_key.setFrame(NSRect::new(
+            NSPoint::new(520.0, 238.0),
+            NSSize::new(110.0, 32.0),
+        ));
+        content.addSubview(&paste_key);
         let save = unsafe {
             NSButton::buttonWithTitle_target_action(
                 &NSString::from_str("保存设置"),
@@ -193,12 +251,15 @@ impl SettingsController {
         }
         let key = ivars.key_field.stringValue().to_string();
         if !key.trim().is_empty() {
-            settings.save_api_key(key.trim());
+            if let Err(error) = settings.save_api_key(key.trim()) {
+                ivars.status.setStringValue(&NSString::from_str(&error));
+                return;
+            }
             ivars.key_field.setStringValue(&NSString::from_str(""));
         }
-        ivars
-            .status
-            .setStringValue(&NSString::from_str("设置已保存。切到 Lucid 后即可使用。"));
+        ivars.status.setStringValue(&NSString::from_str(
+            "设置已保存。API Key 已保存到 Lucid 本机配置。",
+        ));
     }
 
     fn load_model_list(&self) {
@@ -213,7 +274,7 @@ impl SettingsController {
                 .setStringValue(&NSString::from_str("请先填写 API Key。"));
             return;
         };
-        let service = match lucid_core::ai::HttpCorrectionService::new(configuration, api_key) {
+        let service = match HttpCorrectionService::new(configuration, api_key) {
             Ok(service) => service,
             Err(error) => {
                 self.ivars()
@@ -314,7 +375,7 @@ fn text_field(
 fn secure_field(mtm: MainThreadMarker, origin: NSPoint) -> Retained<NSSecureTextField> {
     let field = NSSecureTextField::new(mtm);
     field.setFrame(NSRect::new(origin, NSSize::new(430.0, 28.0)));
-    field.setPlaceholderString(Some(&NSString::from_str("粘贴 API Key")));
+    field.setPlaceholderString(Some(&NSString::from_str("粘贴 API Key（也可点右侧按钮）")));
     field
 }
 

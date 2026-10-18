@@ -1,4 +1,4 @@
-//! 主 App 和输入法共用同一份用户默认值。Key 不进钥匙串。
+//! 主 App 和输入法共用配置；API Key 保存在 Lucid 的本机用户配置中。
 
 use lucid_core::{AiConfiguration, AiProtocol};
 use lucid_platform::{API_KEY_KEY, CONFIGURATION_KEY, DEFAULTS_SUITE};
@@ -94,16 +94,21 @@ impl Settings {
         self.defaults
             .stringForKey(&NSString::from_str(API_KEY_KEY))
             .map(|value| value.to_string())
-            .filter(|value| !value.is_empty())
+            .filter(|value| !value.trim().is_empty())
     }
 
-    pub fn save_api_key(&self, api_key: &str) {
+    pub fn save_api_key(&self, api_key: &str) -> Result<(), String> {
+        let api_key = api_key.trim();
+        if api_key.is_empty() {
+            return Err("API Key 不能为空。".to_owned());
+        }
         unsafe {
             self.defaults.setObject_forKey(
-                Some(&NSString::from_str(api_key.trim())),
+                Some(&NSString::from_str(api_key)),
                 &NSString::from_str(API_KEY_KEY),
             );
         }
         let _ = self.defaults.synchronize();
+        Ok(())
     }
 }

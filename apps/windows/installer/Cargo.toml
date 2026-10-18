@@ -1,0 +1,21 @@
+[package]
+name = "lucid-windows-installer"
+description = "Lucid Windows 单文件安装程序"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+build = "build.rs"
+
+[[bin]]
+name = "LucidSetup"
+path = "src/main.rs"
+
+[build-dependencies]
+embed-resource = "3.0.11"
+
+[target.'cfg(windows)'.dependencies]
+windows.workspace = true
+
+[lints]
+workspace = true

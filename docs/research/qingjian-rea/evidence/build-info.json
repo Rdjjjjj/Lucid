@@ -1,0 +1,25 @@
+{
+  "version": "0.2.1",
+  "tag": "v0.2.1",
+  "commit": "f65ea74c9d631f9a7fd47b8725415a88577f80d2",
+  "built_at": "2026-10-14T02:10:08Z",
+  "toolchain": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "data_tag": "data-v7",
+  "data_sha256": "e259f8bc2a5456c92484c5d4362ca56b3e46b3d2e1a0d463788091a039d79e40",
+  "model_sha256": "83ad55abab750dd04bae93b48430981035d6c530d155db719cf1dccd4c07b0ef",
+  "p2c_model_sha256": "4eabcb140b1833ac8bc7afb4f71d3a9ad8db0d9c8073c1890ec96644b6bef973",
+  "platforms": {
+    "linux": {
+      "built_at": "2026-10-14T02:01:44Z",
+      "runner": "Ubuntu 26.04.1 LTS, Fcitx5 5.1.19"
+    },
+    "macos": {
+      "built_at": "2026-10-14T02:10:08Z",
+      "runner": "macOS 26.6.2"
+    },
+    "windows": {
+      "built_at": "2026-10-14T02:09:37Z",
+      "runner": "Microsoft Windows Server 2025 Datacenter"
+    }
+  }
+}

@@ -86,10 +86,10 @@ fn main() {
     tracing::info!(
         version = env!("CARGO_PKG_VERSION"),
         pid = std::process::id(),
-        build = "wechat-readback-3",
+        build = "icon-refresh-1",
         "Lucid 输入法启动"
     );
-    let _ = std::hint::black_box("lucid-build-marker:wechat-readback-3");
+    let _ = std::hint::black_box("lucid-build-marker:icon-refresh-1");
     std::panic::set_hook(Box::new(|info| {
         tracing::error!(%info, "panic");
     }));

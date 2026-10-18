@@ -65,3 +65,25 @@ apps/macos/scripts/install-local.sh
 - 可分发安装包用 `apps/macos/scripts/package.sh` 生成，包禁止 Installer 自动迁移到旧的构建目录。已有正式安装可用 `--installed` 打包，不再生成临时输入源。
 - 输入回调和翻译请求状态记录在 `~/Library/Logs/Lucid/lucid.log`，不记录正文、按键编码或 API Key；密码/认证输入不跟踪、不翻译。
 - 更新后请在目标应用新建空白输入框，重新选择 Lucid，**手动**输入 `nihao.` 做验收。直接粘贴或发给后台应用的自动化输入，不能验证 macOS 的 InputMethodKit 分发链路。
+
+
+## Windows
+
+Windows 版沿用 Lucid 的产品行为：英文直接上屏，句末或停顿后请求 AI，用户确认后才替换。工程按 TSF 壳、Server、Settings 三个 Rust 2024 包拆开：
+
+- `lucid-windows-tsf`：`LucidTextService.dll`，只处理 TSF/COM、文档读写和替换校验。
+- `lucid-windows-server`：`LucidServer.exe`，通过 Named Pipe 管理会话并发起 AI 请求。
+- `lucid-windows-settings`：`LucidSettings.exe`，配置模型、保存当前用户设置并注册 TSF。
+
+构建：
+
+```bash
+cargo build -p lucid-windows-server --release --target x86_64-pc-windows-gnu
+cargo build -p lucid-windows-tsf --release --target x86_64-pc-windows-gnu
+cargo build -p lucid-windows-settings --release --target x86_64-pc-windows-gnu
+cargo build -p lucid-windows-installer --release --target x86_64-pc-windows-gnu
+```
+
+Windows 安装包是 `LucidSetup.exe`。双击后会请求管理员权限，自动复制组件、注册 TSF、设置当前用户登录启动的 Server，并打开设置窗口；后台 Server 会以当前用户权限运行。`uninstall.ps1` 仍可用于卸载。
+
+这台开发机是 macOS，不能运行 TSF。Windows 目标只能做交叉编译检查，最终注册、输入行为和 UI 需要在 Windows 10/11 实机验证。

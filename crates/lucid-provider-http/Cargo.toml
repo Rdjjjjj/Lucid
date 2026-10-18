@@ -1,0 +1,18 @@
+[package]
+name = "lucid-provider-http"
+description = "Lucid 的 HTTP AI Provider：OpenAI 与 Anthropic 兼容协议"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+lucid-core.workspace = true
+serde_json.workspace = true
+reqwest.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true
+
+[lints]
+workspace = true

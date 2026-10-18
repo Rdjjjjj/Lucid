@@ -5,11 +5,13 @@ use std::time::Duration;
 use reqwest::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderValue};
 use serde_json::{Value, json};
 
-use crate::prompt::CLEANUP_INSTRUCTION;
-
-use super::{
-    AiClientError, AiConfiguration, AiProtocol, CorrectionRequest, CorrectionResult, ResponseParser,
+use lucid_core::prompt::{CHINESE_TRANSLATION_INSTRUCTION, CLEANUP_INSTRUCTION};
+use lucid_core::{
+    AiClientError, AiConfiguration, AiProtocol, CorrectionProvider, CorrectionRequest,
+    CorrectionResult,
 };
+
+use crate::ResponseParser;
 
 pub struct HttpCorrectionService {
     configuration: AiConfiguration,
@@ -43,12 +45,30 @@ impl HttpCorrectionService {
         &self,
         request: &CorrectionRequest,
     ) -> Result<CorrectionResult, AiClientError> {
+        self.complete(&request.sentence, CLEANUP_INSTRUCTION)
+            .await
+            .map(CorrectionResult::new)
+    }
+
+    pub async fn translate_to_chinese(&self, english: &str) -> Result<String, AiClientError> {
+        let raw = self
+            .complete(english, CHINESE_TRANSLATION_INSTRUCTION)
+            .await?;
+        let result = CorrectionResult::new(raw);
+        let chinese = result.chinese_text.unwrap_or(result.corrected_text);
+        if chinese.trim().is_empty() {
+            return Err(AiClientError::InvalidResponse);
+        }
+        Ok(chinese)
+    }
+
+    async fn complete(&self, sentence: &str, instruction: &str) -> Result<String, AiClientError> {
         self.configuration.validate(true)?;
         let response = self
             .client
             .post(self.endpoint(self.completion_suffix())?)
             .headers(self.headers()?)
-            .json(&self.request_body(&request.sentence))
+            .json(&self.request_body(sentence, instruction))
             .send()
             .await
             .map_err(|_| {
@@ -64,9 +84,7 @@ impl HttpCorrectionService {
             .bytes()
             .await
             .map_err(|_| AiClientError::InvalidResponse)?;
-        ResponseParser::sentence(&bytes)
-            .map(CorrectionResult::new)
-            .ok_or(AiClientError::InvalidResponse)
+        ResponseParser::sentence(&bytes).ok_or(AiClientError::InvalidResponse)
     }
 
     pub async fn fetch_models(&self) -> Result<Vec<String>, AiClientError> {
@@ -141,7 +159,7 @@ impl HttpCorrectionService {
         Ok(headers)
     }
 
-    fn request_body(&self, sentence: &str) -> Value {
+    fn request_body(&self, sentence: &str, instruction: &str) -> Value {
         match self.configuration.api_protocol {
             AiProtocol::OpenAiCompatible => json!({
                 "model": self.configuration.model,
@@ -151,7 +169,7 @@ impl HttpCorrectionService {
                 "enable_thinking": false,
                 "reasoning": {"effort": "none"},
                 "messages": [
-                    {"role": "system", "content": CLEANUP_INSTRUCTION},
+                    {"role": "system", "content": instruction},
                     {"role": "user", "content": sentence}
                 ]
             }),
@@ -159,9 +177,18 @@ impl HttpCorrectionService {
                 "model": self.configuration.model,
                 "max_tokens": 1024,
                 "temperature": 0,
-                "system": CLEANUP_INSTRUCTION,
+                "system": instruction,
                 "messages": [{"role": "user", "content": sentence}]
             }),
         }
+    }
+}
+
+impl CorrectionProvider for HttpCorrectionService {
+    fn correct(
+        &self,
+        request: &CorrectionRequest,
+    ) -> impl Future<Output = Result<CorrectionResult, AiClientError>> + Send {
+        HttpCorrectionService::correct(self, request)
     }
 }

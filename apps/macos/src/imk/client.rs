@@ -2,9 +2,9 @@
 
 use std::ffi::CString;
 
+use objc2::msg_send;
 use objc2::rc::Retained;
 use objc2::runtime::AnyObject;
-use objc2::msg_send;
 use objc2_foundation::{NSAttributedString, NSNotFound, NSRange, NSRect, NSString};
 
 use lucid_core::Utf16Range;

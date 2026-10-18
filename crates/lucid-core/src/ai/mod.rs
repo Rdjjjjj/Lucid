@@ -1,20 +1,19 @@
-//! AI 协议适配。OpenAI 与 Anthropic 的差异停在这里，句末检测和替换不认识服务商。
+//! AI 请求的共享模型。网络和具体服务商协议由独立 Provider crate 负责。
 
-mod client;
 mod config;
 mod error;
 mod models;
-mod parser;
 
-pub use client::HttpCorrectionService;
 pub use config::{AiConfiguration, AiProtocol};
 pub use error::AiClientError;
 pub use models::{CorrectionRequest, CorrectionResult};
-pub use parser::ResponseParser;
 
-pub trait CorrectionService {
+pub trait CorrectionProvider {
     fn correct(
         &self,
         request: &CorrectionRequest,
     ) -> impl Future<Output = Result<CorrectionResult, AiClientError>> + Send;
 }
+
+// 兼容早期内部调用方，正式架构名称是 CorrectionProvider。
+pub use CorrectionProvider as CorrectionService;

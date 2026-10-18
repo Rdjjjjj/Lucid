@@ -27,7 +27,11 @@ impl CorrectionResult {
             let zh_clean = zh.trim().to_owned();
             Self {
                 corrected_text: en_clean,
-                chinese_text: if zh_clean.is_empty() { None } else { Some(zh_clean) },
+                chinese_text: if zh_clean.is_empty() {
+                    None
+                } else {
+                    Some(zh_clean)
+                },
             }
         } else {
             Self {

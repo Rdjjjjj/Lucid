@@ -67,4 +67,4 @@ killall LucidInputMethod Lucid imklaunchagent TextInputMenuAgent TextInputSwitch
 echo "已安装输入法：$TARGET"
 echo "已安装设置 App：$SETTINGS"
 echo "旧版备份（不注册为输入法）：$BACKUP"
-echo '请重新打开要输入的应用，再选择 Lucid；设置和 API Key 均保留。'
+echo '请重新打开要输入的应用，再选择 Lucid；如果设置窗口显示 API Key 未保存，请重新填写并保存。'

@@ -12,10 +12,8 @@ pub mod replacement;
 pub mod sentence;
 pub mod text;
 
-pub use ai::{
-    AiClientError, AiConfiguration, AiProtocol, CorrectionRequest, CorrectionResult,
-    CorrectionService,
-};
+pub use ai::{AiClientError, AiConfiguration, AiProtocol, CorrectionRequest, CorrectionResult};
+pub use ai::{CorrectionProvider, CorrectionService};
 pub use completion::SentenceCompletion;
 pub use config::SettingsStore;
 pub use prompt::CLEANUP_INSTRUCTION;

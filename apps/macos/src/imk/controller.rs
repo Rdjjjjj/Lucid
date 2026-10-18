@@ -6,6 +6,7 @@
 //! 由输入法写入并返回 YES，命令键返回 NO 交给应用。
 
 use std::cell::RefCell;
+use std::time::{Duration, Instant};
 
 use objc2::rc::{Allocated, Retained};
 use objc2::runtime::{AnyObject, Bool, NSObjectProtocol, Sel};
@@ -15,7 +16,6 @@ use objc2_foundation::NSString;
 use objc2_input_method_kit::{IMKInputController, IMKServer};
 
 use super::client::TextClient;
-use super::session::InputSession;
 use crate::host;
 use crate::suggestion::SuggestionPanel;
 
@@ -49,8 +49,16 @@ define_class!(
                 tracing::info!("inputText 没有 client");
                 return Bool::NO;
             };
+            // The settings app is a normal Cocoa form, not an input target.
+            // Let AppKit handle its text fields and command shortcuts directly;
+            // otherwise Lucid can swallow Command-V while its input source is
+            // selected, making it impossible to paste a service URL or key.
+            let client = TextClient::new(client);
+            if is_lucid_settings_host(&client.bundle_identifier()) {
+                return Bool::NO;
+            }
             let text = text.map(|value| value.to_string()).unwrap_or_default();
-            Bool::new(self.insert_printable(&text, key_code as i32, flags, TextClient::new(client)))
+            Bool::new(self.insert_printable(&text, key_code as i32, flags, client))
         }
 
         #[unsafe(method(inputText:client:))]
@@ -62,6 +70,11 @@ define_class!(
         fn handle_event(&self, event: Option<&NSEvent>, client: Option<&AnyObject>) -> Bool {
             let Some(event) = event else { return Bool::NO };
             if event.r#type() != NSEventType::KeyDown {
+                return Bool::NO;
+            }
+            if client.is_some_and(|client| {
+                is_lucid_settings_host(&TextClient::new(client).bundle_identifier())
+            }) {
                 return Bool::NO;
             }
             self.input_text_key(
@@ -84,20 +97,14 @@ define_class!(
             let host_id = client.map(|value| TextClient::new(value).bundle_identifier()).unwrap_or_default();
             tracing::info!(host = %host_id, selector = %name, "didCommand");
             if selector == Some(sel!(deleteBackward:)) {
-                let mut state = self.ivars().borrow_mut();
-                state.session.cancel_pause();
-                state.session.delete_backward();
+                // The scheduler owns the sentence tracker and pending range.
+                // Keep command handling on that single state so a late result
+                // cannot survive a backspace in another IMK callback.
                 host::delete_shared_backward();
             } else if selector == Some(sel!(insertNewline:)) {
-                let mut state = self.ivars().borrow_mut();
-                state.session.cancel_pause();
-                state.session.reset();
                 host::reset_shared();
             } else if selector == Some(sel!(cancelOperation:)) && SuggestionPanel::has_replacement() {
-                let mut state = self.ivars().borrow_mut();
-                state.session.invalidate_request();
-                state.session.clear_pending();
-                SuggestionPanel::hide();
+                host::cancel_suggestion();
             }
             Bool::NO
         }
@@ -117,7 +124,6 @@ define_class!(
             }
             let host_id = sender.map(|value| TextClient::new(value).bundle_identifier());
             tracing::info!(host = ?host_id, "activateServer");
-            self.ivars().borrow_mut().session.reset();
             if let Some(sender) = sender {
                 host::activate_client(sender);
             }
@@ -127,11 +133,9 @@ define_class!(
         #[unsafe(method(deactivateServer:))]
         fn deactivate_server(&self, _sender: Option<&AnyObject>) {
             tracing::info!("deactivateServer，保留当前句子和异步建议");
-            // IMK can deactivate around a normal insertText call. The next
-            // activation decides whether the client really changed; clearing
-            // the shared request here made the English panel disappear before
-            // the model response arrived.
-            self.ivars().borrow_mut().session.reset();
+            // IMK can deactivate around a normal insertText call. The shared
+            // scheduler keeps the sentence and request alive until the next
+            // client is known to be different.
         }
 
         #[unsafe(method(commitComposition:))]
@@ -143,18 +147,51 @@ define_class!(
     unsafe impl NSObjectProtocol for LucidInputController {}
 );
 
+struct KeyDeduplicator {
+    last_key: String,
+    last_key_code: i32,
+    last_key_at: Option<Instant>,
+}
+
+impl KeyDeduplicator {
+    fn new() -> Self {
+        Self {
+            last_key: String::new(),
+            last_key_code: i32::MIN,
+            last_key_at: None,
+        }
+    }
+
+    fn should_ignore(&mut self, text: &str, key_code: i32) -> bool {
+        let now = Instant::now();
+        let duplicate = self.last_key == text
+            && self.last_key_code == key_code
+            && self
+                .last_key_at
+                .is_some_and(|at| now.duration_since(at) < Duration::from_millis(30));
+        self.last_key = text.to_owned();
+        self.last_key_code = key_code;
+        self.last_key_at = Some(now);
+        duplicate
+    }
+}
+
 pub struct ControllerState {
-    session: InputSession,
-    host_id: Option<String>,
+    // This guard is separate from the scheduler's sentence state. The latter
+    // is shared by pause and command callbacks, so it has exactly one owner.
+    key_guard: KeyDeduplicator,
 }
 
 impl ControllerState {
     fn new() -> Self {
         Self {
-            session: InputSession::new(),
-            host_id: None,
+            key_guard: KeyDeduplicator::new(),
         }
     }
+}
+
+fn is_lucid_settings_host(host_id: &str) -> bool {
+    host_id == "io.github.rdj.lucid"
 }
 
 impl LucidInputController {
@@ -165,16 +202,9 @@ impl LucidInputController {
         flags: usize,
         client: TextClient<'_>,
     ) -> bool {
-        let host_id = {
-            let mut state = self.ivars().borrow_mut();
-            if let Some(id) = state.host_id.clone() {
-                id
-            } else {
-                let id = client.bundle_identifier();
-                state.host_id = Some(id.clone());
-                id
-            }
-        };
+        // Read the current client every time. IMK can reuse a controller
+        // instance while focus moves between text fields in the same app.
+        let host_id = client.bundle_identifier();
 
         if crate::imk::is_authentication_host(&host_id) || crate::imk::secure_input_enabled() {
             host::reset_active_context();
@@ -207,7 +237,7 @@ impl LucidInputController {
             return false;
         }
 
-        host::clear_flip_state();
+        host::invalidate_pending_request();
         SuggestionPanel::hide();
 
         let is_terminator = text.chars().any(|c| ".!?。？！".contains(c));
@@ -220,8 +250,7 @@ impl LucidInputController {
 
         let is_duplicate = {
             let mut state = self.ivars().borrow_mut();
-            state.session.cancel_pause();
-            state.session.should_ignore_duplicate(text, key_code)
+            state.key_guard.should_ignore(text, key_code)
         };
         if is_duplicate {
             return true;

@@ -3,7 +3,12 @@ resolver = "3"
 members = [
     "crates/lucid-core",
     "crates/lucid-platform",
+    "crates/lucid-provider-http",
     "apps/macos",
+    "apps/windows/server",
+    "apps/windows/tsf",
+    "apps/windows/settings",
+    "apps/windows/installer",
 ]
 
 [workspace.package]
@@ -18,6 +23,7 @@ all = "warn"
 [workspace.dependencies]
 lucid-core = { path = "crates/lucid-core" }
 lucid-platform = { path = "crates/lucid-platform" }
+lucid-provider-http = { path = "crates/lucid-provider-http" }
 
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
@@ -25,7 +31,7 @@ thiserror = "2.0.20"
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 tracing-appender = "0.2.5"
-tokio = { version = "1.53.1", features = ["rt", "rt-multi-thread", "macros", "time"] }
+tokio = { version = "1.53.1", features = ["rt", "rt-multi-thread", "macros", "time", "net", "sync"] }
 reqwest = { version = "0.13", default-features = false, features = ["json", "rustls", "charset"] }
 
 objc2 = "0.6.4"
@@ -34,3 +40,18 @@ objc2-foundation = { version = "0.3.2", features = ["NSArray", "NSAttributedStri
 objc2-app-kit = { version = "0.3.2", features = ["NSApplication", "NSAttributedString", "NSEvent", "NSBezierPath", "NSColor", "NSFont", "NSGraphics", "NSImage", "NSPanel", "NSResponder", "NSScreen", "NSStatusBar", "NSStatusItem", "NSMenu", "NSMenuItem", "NSTextField", "NSSecureTextField", "NSButton", "NSControl", "NSView", "NSWindow", "NSTextView", "NSScrollView", "NSPopUpButton", "NSRunningApplication", "block2"] }
 objc2-input-method-kit = "0.3.2"
 objc2-core-foundation = { version = "0.3.2", features = ["CFArray", "CFBase", "CFDictionary", "CFNumber", "CFString", "CFURL"] }
+
+windows = { version = "0.62.2", features = [
+    "Win32_Foundation",
+    "Win32_Graphics_Gdi",
+    "Win32_Security",
+    "Win32_System_Com",
+    "Win32_System_Com_StructuredStorage",
+    "Win32_System_LibraryLoader",
+    "Win32_System_Registry",
+    "Win32_System_Threading",
+    "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_UI_HiDpi",
+    "Win32_UI_TextServices",
+    "Win32_UI_WindowsAndMessaging",
+] }

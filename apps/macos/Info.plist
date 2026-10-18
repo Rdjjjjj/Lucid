@@ -21,7 +21,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>0.2.11</string>
 	<key>CFBundleVersion</key>
-	<string>36</string>
+	<string>50</string>
 	<key>InputMethodConnectionName</key>
 	<string>io.github.rdj.inputmethod.lucid_Connection</string>
 	<key>InputMethodServerControllerClass</key>

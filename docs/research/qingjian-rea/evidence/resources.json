@@ -1,0 +1,1066 @@
+{
+  "method": "Independent Python file parsing; not REA Evidence or runtime observation",
+  "binary_string_scope": "Exact UTF-8 byte searches in the entire selected executable; presence does not establish a method implementation or execution",
+  "bundle_info": {
+    "CFBundleDevelopmentRegion": "zh-Hans",
+    "CFBundleDisplayName": "青简",
+    "CFBundleExecutable": "qingjian-macos",
+    "CFBundleIconFile": "Qingjian",
+    "CFBundleIdentifier": "app.qingjian.inputmethod",
+    "CFBundleInfoDictionaryVersion": "6.0",
+    "CFBundleName": "Qingjian",
+    "CFBundlePackageType": "APPL",
+    "CFBundleShortVersionString": "0.2.1",
+    "CFBundleVersion": "369",
+    "ComponentInputModeDict": {
+      "tsInputModeListKey": {
+        "app.qingjian.inputmethod.Hans": {
+          "TISInputSourceID": "app.qingjian.inputmethod.Hans",
+          "TISIntendedLanguage": "zh-Hans",
+          "tsInputModeAlternateMenuIconFileKey": "qingjian-menu.pdf",
+          "tsInputModeCharacterRepertoireKey": [
+            "Hans"
+          ],
+          "tsInputModeDefaultStateKey": true,
+          "tsInputModeIsVisibleKey": true,
+          "tsInputModeMenuIconFileKey": "qingjian-menu.pdf",
+          "tsInputModePaletteIconFileKey": "qingjian-menu.pdf",
+          "tsInputModePrimaryInScriptKey": true,
+          "tsInputModeScriptKey": "smUnicodeScript"
+        }
+      },
+      "tsVisibleInputModeOrderedArrayKey": [
+        "app.qingjian.inputmethod.Hans"
+      ]
+    },
+    "InputMethodConnectionName": "app.qingjian.inputmethod_Connection",
+    "InputMethodServerControllerClass": "QingjianInputController",
+    "InputMethodType": "Keyboard",
+    "LSBackgroundOnly": true,
+    "LSMinimumSystemVersion": "13.0",
+    "NSPrincipalClass": "NSApplication",
+    "TICapsLockLanguageSwitchCapable": true,
+    "TISIconIsTemplate": true,
+    "TISInputSourceID": "app.qingjian.inputmethod",
+    "TISIntendedLanguage": "zh-Hans",
+    "tsInputMethodCharacterRepertoireKey": [
+      "Hans"
+    ],
+    "tsInputMethodIconFileKey": "qingjian-menu.pdf"
+  },
+  "executable": {
+    "bytes": 21192944,
+    "sha256": "62f6de6a59a0606f1be24da35c1a9118e0bf73ba565b422b3757b5bb09949350"
+  },
+  "total_regular_file_bytes": 252363958,
+  "files": [
+    {
+      "path": "Contents/Info.plist",
+      "bytes": 2588,
+      "sha256": "5be361475deb4ecc6fa9e72eb36f877d68429dad68312881a3376024afa781fa"
+    },
+    {
+      "path": "Contents/MacOS/qingjian-macos",
+      "bytes": 21192944,
+      "sha256": "62f6de6a59a0606f1be24da35c1a9118e0bf73ba565b422b3757b5bb09949350"
+    },
+    {
+      "path": "Contents/PkgInfo",
+      "bytes": 8,
+      "sha256": "82502191c9484b04d685374f9879a0066069c49b8acae7a04b01d38d07e8eca0"
+    },
+    {
+      "path": "Contents/Resources/Qingjian.icns",
+      "bytes": 131065,
+      "sha256": "c02e70af95d7cbfa7516e0402f6d1e23c35e001bd1b4659770f903c0b976349f"
+    },
+    {
+      "path": "Contents/Resources/dict.qj",
+      "bytes": 4289288,
+      "sha256": "b976c425a208c0738f149924071ecf2607761887882b1b917c649ab5898e9488"
+    },
+    {
+      "path": "Contents/Resources/dict.tsv",
+      "bytes": 2717,
+      "sha256": "48e5cd56f9faa754ffd932068fa21e3ace3862699f576f7801343eacec80349e"
+    },
+    {
+      "path": "Contents/Resources/dicts/animals.qj",
+      "bytes": 1079352,
+      "sha256": "c610234a79fab044332fe8906f3366f91cec640a33991e9fb0be99c9791e2940"
+    },
+    {
+      "path": "Contents/Resources/dicts/automotive.qj",
+      "bytes": 99984,
+      "sha256": "8297eefff0401ef98518988c77009829b870eaf28aad76608287e11670d10c0b"
+    },
+    {
+      "path": "Contents/Resources/dicts/finance.qj",
+      "bytes": 125272,
+      "sha256": "77046444a82f66bab7d552104b37e8c472f2b737d666eeb7f5af196a206f92c3"
+    },
+    {
+      "path": "Contents/Resources/dicts/food.qj",
+      "bytes": 461272,
+      "sha256": "8a63e2a65d4e302bb9bb9af9fc4d45c6e570986ffcaf247761b6b7e34ce0ea22"
+    },
+    {
+      "path": "Contents/Resources/dicts/historical_figures.qj",
+      "bytes": 511016,
+      "sha256": "aa148295136e984280c3ab5a7cb18a32a9e6aca2ec5b51b9e4cfea9f329bf5ef"
+    },
+    {
+      "path": "Contents/Resources/dicts/idioms.qj",
+      "bytes": 213192,
+      "sha256": "356b78ca8883b945835c649b8d16e304a64c8019efa58f84fb973e65f3a1ee64"
+    },
+    {
+      "path": "Contents/Resources/dicts/it_computing.qj",
+      "bytes": 671416,
+      "sha256": "a42c736f79e4e1c05ab2d06d71bf8275a30522d2dd8cbab4974be956fae17e1e"
+    },
+    {
+      "path": "Contents/Resources/dicts/law.qj",
+      "bytes": 505520,
+      "sha256": "e3cb519e4967932d2a2fdedf85f2461ac2103d5299f9c5cdee0ffdf1a589cf54"
+    },
+    {
+      "path": "Contents/Resources/dicts/medicine.qj",
+      "bytes": 961104,
+      "sha256": "b492ec2dd504d673e0b377b86d885c50aa2fad436b5fb3ad4546eba05b3177af"
+    },
+    {
+      "path": "Contents/Resources/dicts/places.qj",
+      "bytes": 2082544,
+      "sha256": "cfd05ae5a73c513be9c9efd5c487d6498a171eac364de598d10c09008e7a4a36"
+    },
+    {
+      "path": "Contents/Resources/dicts/poetry_lines.qj",
+      "bytes": 940744,
+      "sha256": "e690fcfafd44276863bcabc4e2a259981079c4f10b76559464e61f12fa36ec28"
+    },
+    {
+      "path": "Contents/Resources/emoji-en.tsv",
+      "bytes": 98827,
+      "sha256": "10a9667c13036e0f7f6246a1d8987fa3f4554b2de68d0ee935a2d035717da1c0"
+    },
+    {
+      "path": "Contents/Resources/emoji-zh.tsv",
+      "bytes": 114160,
+      "sha256": "8ea7447dbb700fa73498be36e36e30e16236446e0dd29b326f812de80e7629f0"
+    },
+    {
+      "path": "Contents/Resources/en.lproj/InfoPlist.strings",
+      "bytes": 241,
+      "sha256": "8d5e25b9102a99777dfd30137fcb6587265ee5a71aa7459f5eb28ebebcfdfa27"
+    },
+    {
+      "path": "Contents/Resources/english.tsv",
+      "bytes": 2204768,
+      "sha256": "e9dce15a87843c69b26fe7a3979a6848d06db50f14617ef217dd3db4cbf1a742"
+    },
+    {
+      "path": "Contents/Resources/glossary-de.qj",
+      "bytes": 6871560,
+      "sha256": "78d89442d5e6812bab2f95c71e47c4bb970f9a3f881360928b5752ace989e0f5"
+    },
+    {
+      "path": "Contents/Resources/glossary-de.tsv",
+      "bytes": 189,
+      "sha256": "4bb2cec13f59df08e575c265cf167fa38866dba4dc03d133921f51577ab35a06"
+    },
+    {
+      "path": "Contents/Resources/glossary-en.qj",
+      "bytes": 15565368,
+      "sha256": "4cc9c587b206d0f12aabb1b85cb21e6ac2a1c8c4932b9af14332bd96e0be012a"
+    },
+    {
+      "path": "Contents/Resources/glossary-en.tsv",
+      "bytes": 2355,
+      "sha256": "d6e61702a3d13529987a40ed02ad96c359a2786ffd5ce6bd80d41ee11d0b13c2"
+    },
+    {
+      "path": "Contents/Resources/glossary-es.qj",
+      "bytes": 13194160,
+      "sha256": "13f5fbda3f1295c5946ddde5e57017f0689f2dd985a951c5bffaf821cb421865"
+    },
+    {
+      "path": "Contents/Resources/glossary-ja.qj",
+      "bytes": 21824776,
+      "sha256": "ec41e4983bf46c0366124afb5285dba14f5c1ee425bd55d9a9f5518d93256933"
+    },
+    {
+      "path": "Contents/Resources/glossary-ja.tsv",
+      "bytes": 853,
+      "sha256": "10ba9e15429ec4bef5c877a1bcf7c2c9762cc2179cf493426a2052b913dea454"
+    },
+    {
+      "path": "Contents/Resources/glossary-vi.qj",
+      "bytes": 7814288,
+      "sha256": "300a9e1f877fdbabb686cc21dde6dc4e603f65f224a0be8f9cd7dc58b0eecbf9"
+    },
+    {
+      "path": "Contents/Resources/glossary-vi.tsv",
+      "bytes": 79,
+      "sha256": "5e9d979305146503c31acc0885cfaa9019eb29dd24f68ba4c743de5b9268a9f8"
+    },
+    {
+      "path": "Contents/Resources/glossary-zh.qj",
+      "bytes": 2876888,
+      "sha256": "c1280592349e6bff942ede0aee19935f7883a18935ac3b521a78d654516e755e"
+    },
+    {
+      "path": "Contents/Resources/levels-en.tsv",
+      "bytes": 102356,
+      "sha256": "ada5c6aa30b0284daf52261674642dc89a74191aa4d8588c2e280ab5f1337ab4"
+    },
+    {
+      "path": "Contents/Resources/levels-ja.tsv",
+      "bytes": 87659,
+      "sha256": "888548525af3c429e4d1b59d3966c93447dea52a33d8e0f31e21fe9d9431792d"
+    },
+    {
+      "path": "Contents/Resources/lm.qj",
+      "bytes": 44798744,
+      "sha256": "38e1ae670952700d66cc8565741a6bdec0d8a68948b4800d473d7177ed9060b4"
+    },
+    {
+      "path": "Contents/Resources/models/hanzhang-tongbian/hanzhang-tongbian-small.qjm",
+      "bytes": 46141208,
+      "sha256": "4eabcb140b1833ac8bc7afb4f71d3a9ad8db0d9c8073c1890ec96644b6bef973"
+    },
+    {
+      "path": "Contents/Resources/models/hanzhang-zhiwei/hanzhang-zhiwei-small.qjm",
+      "bytes": 56044208,
+      "sha256": "83ad55abab750dd04bae93b48430981035d6c530d155db719cf1dccd4c07b0ef"
+    },
+    {
+      "path": "Contents/Resources/qingjian-menu.pdf",
+      "bytes": 1887,
+      "sha256": "ea5550ad99ce7f9ac7144dbf76ca005224c4b4d1a4cb49f9c462203ee7a0f9fe"
+    },
+    {
+      "path": "Contents/Resources/uninstall.sh",
+      "bytes": 1199,
+      "sha256": "c08b62f66d9fe23222dd5e05565d56e98d3c9c6a39da7a6fab44c232bb76ac24"
+    },
+    {
+      "path": "Contents/Resources/wubi/wubi86.tsv",
+      "bytes": 1336615,
+      "sha256": "2ca54a4632b6891ede936b73c7c4c0c9198093c1171c8db37b5a233065df4c86"
+    },
+    {
+      "path": "Contents/Resources/zh-Hans.lproj/InfoPlist.strings",
+      "bytes": 226,
+      "sha256": "fae1d7088196efe160629471842a688a40a8a0ab4d1dfb1da84ac66f2204eddb"
+    },
+    {
+      "path": "Contents/_CodeSignature/CodeResources",
+      "bytes": 11318,
+      "sha256": "f77bb9e2eac9cf4e7c12a330c99117f6a8fd1e2ee150a165fbd76907888aba58"
+    }
+  ],
+  "binary_string_offsets": {
+    "QingjianInputController": [
+      "0xec2bfb",
+      "0x114df97",
+      "0x114e525",
+      "0x11eef82",
+      "0x11eefac",
+      "0x1208742",
+      "0x120c827",
+      "0x120cff3",
+      "0x120f9bd",
+      "0x1212fd1",
+      "0x121351c",
+      "0x121e2d6",
+      "0x1229c0b",
+      "0x1229f51",
+      "0x12342af",
+      "0x12383d4",
+      "0x123e0b9",
+      "0x12400c0",
+      "0x124091e",
+      "0x1248adf",
+      "0x1248bc9",
+      "0x1250a03",
+      "0x1258916",
+      "0x125b8d1",
+      "0x125ebba",
+      "0x126195e",
+      "0x1267c75",
+      "0x12778e4",
+      "0x127894c",
+      "0x1280fb8",
+      "0x128b925",
+      "0x128ff9b",
+      "0x1293da5",
+      "0x12980c7",
+      "0x129e79c",
+      "0x12abea3",
+      "0x12b1439",
+      "0x12b6b24",
+      "0x12bbd77",
+      "0x12be2c1",
+      "0x12be632",
+      "0x12c06eb",
+      "0x12c3087",
+      "0x12d5bf2",
+      "0x12d6e9d",
+      "0x12dda02",
+      "0x12dfb47",
+      "0x12e2f9f",
+      "0x12e48fc",
+      "0x12f0942",
+      "0x12f5c82",
+      "0x12fc57d",
+      "0x1304c65",
+      "0x1305f1f",
+      "0x13078d5",
+      "0x1308700",
+      "0x130ae01",
+      "0x130b7fd",
+      "0x130db1a",
+      "0x130f7bd",
+      "0x1312df9",
+      "0x1313bd6",
+      "0x1314555",
+      "0x131be70",
+      "0x131f038",
+      "0x132e849",
+      "0x132f7b7",
+      "0x1330716",
+      "0x13348bf",
+      "0x133b942",
+      "0x1348e69",
+      "0x1349f0b",
+      "0x134d058",
+      "0x134d85b",
+      "0x134e4fa",
+      "0x135d79a",
+      "0x135ebb1",
+      "0x135f3a6",
+      "0x1360bf7",
+      "0x136c8f4",
+      "0x1370dc4",
+      "0x13717cd",
+      "0x1380ed6",
+      "0x13813e9",
+      "0x138a985",
+      "0x138b3cf",
+      "0x139205d",
+      "0x1394fe4",
+      "0x1396b84",
+      "0x1399466",
+      "0x139b901",
+      "0x139fac6",
+      "0x13a1c8a",
+      "0x13a50ed",
+      "0x13a6136",
+      "0x13a61d6",
+      "0x13a9364",
+      "0x13b0e0c",
+      "0x13b3e1d",
+      "0x13be2e3",
+      "0x13cc0b4",
+      "0x13cca3a"
+    ],
+    "handleEvent:client:": [
+      "0xec2c33"
+    ],
+    "inputText:client:": [],
+    "inputText:key:modifiers:client:": [],
+    "activateServer:": [
+      "0xec2c5a",
+      "0xec2c7d"
+    ],
+    "deactivateServer:": [
+      "0xec2c7b"
+    ],
+    "commitComposition:": [
+      "0xec2c47"
+    ],
+    "setMarkedText:selectionRange:replacementRange:": [
+      "0xec29ea"
+    ],
+    "insertText:replacementRange:": [
+      "0xec29a1"
+    ],
+    "IsSecureEventInputEnabled": [
+      "0x10efdd2",
+      "0x11fbca3"
+    ],
+    "objc_allocateClassPair": [
+      "0x10f0b02",
+      "0x11eec28"
+    ],
+    "objc_registerClassPair": [
+      "0x10f0c5b",
+      "0x11eec10"
+    ]
+  },
+  "containers": [
+    {
+      "path": "dict.qj",
+      "bytes": 4289288,
+      "sha256": "b976c425a208c0738f149924071ecf2607761887882b1b917c649ab5898e9488",
+      "format_version": 1,
+      "kind": 1,
+      "sections": {
+        "META": {
+          "offset": 152,
+          "bytes": 439
+        },
+        "TEXT": {
+          "offset": 592,
+          "bytes": 780724
+        },
+        "KEYS": {
+          "offset": 781320,
+          "bytes": 901678
+        },
+        "INDX": {
+          "offset": 1683000,
+          "bytes": 1011680
+        },
+        "SLOT": {
+          "offset": 2694680,
+          "bytes": 1594608
+        }
+      },
+      "declared_metadata_toml": "name = \"青简基础词库\"\nlicense = \"MIT AND Unicode-3.0\"\nattribution = \"通用规范汉字表；现代汉语常用词表（liuxilu 校对版）；THUOCL（清华大学自然语言处理实验室，MIT）；读音 Unihan（Unicode）、CNS 全字库（政府資料開放授權條款）\"\nsource = \"https://github.com/qingjian-team/qingjian/tree/main/assets/lexicon\"\nversion = \"\"\nentries = 132884\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "dicts/animals.qj",
+      "bytes": 1079352,
+      "sha256": "c610234a79fab044332fe8906f3366f91cec640a33991e9fb0be99c9791e2940",
+      "format_version": 1,
+      "kind": 1,
+      "sections": {
+        "META": {
+          "offset": 152,
+          "bytes": 287
+        },
+        "TEXT": {
+          "offset": 440,
+          "bytes": 263676
+        },
+        "KEYS": {
+          "offset": 264120,
+          "bytes": 337702
+        },
+        "INDX": {
+          "offset": 601824,
+          "bytes": 272000
+        },
+        "SLOT": {
+          "offset": 873824,
+          "bytes": 205524
+        }
+      },
+      "declared_metadata_toml": "name = \"青简领域词库：动物\"\nlicense = \"MIT AND Unicode-3.0\"\nattribution = \"THUOCL（清华大学自然语言处理实验室，MIT）；读音 Unihan（Unicode）\"\nsource = \"https://github.com/thunlp/THUOCL\"\nversion = \"\"\nentries = 17127\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "dicts/automotive.qj",
+      "bytes": 99984,
+      "sha256": "8297eefff0401ef98518988c77009829b870eaf28aad76608287e11670d10c0b",
+      "format_version": 1,
+      "kind": 1,
+      "sections": {
+        "META": {
+          "offset": 152,
+          "bytes": 286
+        },
+        "TEXT": {
+          "offset": 440,
+          "bytes": 23301
+        },
+        "KEYS": {
+          "offset": 23744,
+          "bytes": 30275
+        },
+        "INDX": {
+          "offset": 54024,
+          "bytes": 26256
+        },
+        "SLOT": {
+          "offset": 80280,
+          "bytes": 19704
+        }
+      },
+      "declared_metadata_toml": "name = \"青简领域词库：汽车\"\nlicense = \"MIT AND Unicode-3.0\"\nattribution = \"THUOCL（清华大学自然语言处理实验室，MIT）；读音 Unihan（Unicode）\"\nsource = \"https://github.com/thunlp/THUOCL\"\nversion = \"\"\nentries = 1642\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "dicts/finance.qj",
+      "bytes": 125272,
+      "sha256": "77046444a82f66bab7d552104b37e8c472f2b737d666eeb7f5af196a206f92c3",
+      "format_version": 1,
+      "kind": 1,
+      "sections": {
+        "META": {
+          "offset": 152,
+          "bytes": 286
+        },
+        "TEXT": {
+          "offset": 440,
+          "bytes": 25062
+        },
+        "KEYS": {
+          "offset": 25504,
+          "bytes": 32446
+        },
+        "INDX": {
+          "offset": 57952,
+          "bytes": 38352
+        },
+        "SLOT": {
+          "offset": 96304,
+          "bytes": 28968
+        }
+      },
+      "declared_metadata_toml": "name = \"青简领域词库：财经\"\nlicense = \"MIT AND Unicode-3.0\"\nattribution = \"THUOCL（清华大学自然语言处理实验室，MIT）；读音 Unihan（Unicode）\"\nsource = \"https://github.com/thunlp/THUOCL\"\nversion = \"\"\nentries = 2414\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "dicts/food.qj",
+      "bytes": 461272,
+      "sha256": "8a63e2a65d4e302bb9bb9af9fc4d45c6e570986ffcaf247761b6b7e34ce0ea22",
+      "format_version": 1,
+      "kind": 1,
+      "sections": {
+        "META": {
+          "offset": 152,
+          "bytes": 286
+        },
+        "TEXT": {
+          "offset": 440,
+          "bytes": 101115
+        },
+        "KEYS": {
+          "offset": 101560,
+          "bytes": 129807
+        },
+        "INDX": {
+          "offset": 231368,
+          "bytes": 130912
+        },
+        "SLOT": {
+          "offset": 362280,
+          "bytes": 98988
+        }
+      },
+      "declared_metadata_toml": "name = \"青简领域词库：饮食\"\nlicense = \"MIT AND Unicode-3.0\"\nattribution = \"THUOCL（清华大学自然语言处理实验室，MIT）；读音 Unihan（Unicode）\"\nsource = \"https://github.com/thunlp/THUOCL\"\nversion = \"\"\nentries = 8249\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "dicts/historical_figures.qj",
+      "bytes": 511016,
+      "sha256": "aa148295136e984280c3ab5a7cb18a32a9e6aca2ec5b51b9e4cfea9f329bf5ef",
+      "format_version": 1,
+      "kind": 1,
+      "sections": {
+        "META": {
+          "offset": 152,
+          "bytes": 293
+        },
+        "TEXT": {
+          "offset": 448,
+          "bytes": 91077
+        },
+        "KEYS": {
+          "offset": 91528,
+          "bytes": 117862
+        },
+        "INDX": {
+          "offset": 209392,
+          "bytes": 167680
+        },
+        "SLOT": {
+          "offset": 377072,
+          "bytes": 133944
+        }
+      },
+      "declared_metadata_toml": "name = \"青简领域词库：历史人物\"\nlicense = \"MIT AND Unicode-3.0\"\nattribution = \"THUOCL（清华大学自然语言处理实验室，MIT）；读音 Unihan（Unicode）\"\nsource = \"https://github.com/thunlp/THUOCL\"\nversion = \"\"\nentries = 11162\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "dicts/idioms.qj",
+      "bytes": 213192,
+      "sha256": "356b78ca8883b945835c649b8d16e304a64c8019efa58f84fb973e65f3a1ee64",
+      "format_version": 1,
+      "kind": 1,
+      "sections": {
+        "META": {
+          "offset": 152,
+          "bytes": 286
+        },
+        "TEXT": {
+          "offset": 440,
+          "bytes": 48120
+        },
+        "KEYS": {
+          "offset": 48560,
+          "bytes": 61251
+        },
+        "INDX": {
+          "offset": 109816,
+          "bytes": 59056
+        },
+        "SLOT": {
+          "offset": 168872,
+          "bytes": 44316
+        }
+      },
+      "declared_metadata_toml": "name = \"青简领域词库：成语\"\nlicense = \"MIT AND Unicode-3.0\"\nattribution = \"THUOCL（清华大学自然语言处理实验室，MIT）；读音 Unihan（Unicode）\"\nsource = \"https://github.com/thunlp/THUOCL\"\nversion = \"\"\nentries = 3693\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "dicts/it_computing.qj",
+      "bytes": 671416,
+      "sha256": "a42c736f79e4e1c05ab2d06d71bf8275a30522d2dd8cbab4974be956fae17e1e",
+      "format_version": 1,
+      "kind": 1,
+      "sections": {
+        "META": {
+          "offset": 152,
+          "bytes": 296
+        },
+        "TEXT": {
+          "offset": 448,
+          "bytes": 147993
+        },
+        "KEYS": {
+          "offset": 148448,
+          "bytes": 191137
+        },
+        "INDX": {
+          "offset": 339592,
+          "bytes": 189008
+        },
+        "SLOT": {
+          "offset": 528600,
+          "bytes": 142812
+        }
+      },
+      "declared_metadata_toml": "name = \"青简领域词库：IT 与计算机\"\nlicense = \"MIT AND Unicode-3.0\"\nattribution = \"THUOCL（清华大学自然语言处理实验室，MIT）；读音 Unihan（Unicode）\"\nsource = \"https://github.com/thunlp/THUOCL\"\nversion = \"\"\nentries = 11901\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "dicts/law.qj",
+      "bytes": 505520,
+      "sha256": "e3cb519e4967932d2a2fdedf85f2461ac2103d5299f9c5cdee0ffdf1a589cf54",
+      "format_version": 1,
+      "kind": 1,
+      "sections": {
+        "META": {
+          "offset": 152,
+          "bytes": 286
+        },
+        "TEXT": {
+          "offset": 440,
+          "bytes": 132708
+        },
+        "KEYS": {
+          "offset": 133152,
+          "bytes": 174170
+        },
+        "INDX": {
+          "offset": 307328,
+          "bytes": 113216
+        },
+        "SLOT": {
+          "offset": 420544,
+          "bytes": 84972
+        }
+      },
+      "declared_metadata_toml": "name = \"青简领域词库：法律\"\nlicense = \"MIT AND Unicode-3.0\"\nattribution = \"THUOCL（清华大学自然语言处理实验室，MIT）；读音 Unihan（Unicode）\"\nsource = \"https://github.com/thunlp/THUOCL\"\nversion = \"\"\nentries = 7081\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "dicts/medicine.qj",
+      "bytes": 961104,
+      "sha256": "b492ec2dd504d673e0b377b86d885c50aa2fad436b5fb3ad4546eba05b3177af",
+      "format_version": 1,
+      "kind": 1,
+      "sections": {
+        "META": {
+          "offset": 152,
+          "bytes": 287
+        },
+        "TEXT": {
+          "offset": 440,
+          "bytes": 218274
+        },
+        "KEYS": {
+          "offset": 218720,
+          "bytes": 284900
+        },
+        "INDX": {
+          "offset": 503624,
+          "bytes": 260656
+        },
+        "SLOT": {
+          "offset": 764280,
+          "bytes": 196824
+        }
+      },
+      "declared_metadata_toml": "name = \"青简领域词库：医学\"\nlicense = \"MIT AND Unicode-3.0\"\nattribution = \"THUOCL（清华大学自然语言处理实验室，MIT）；读音 Unihan（Unicode）\"\nsource = \"https://github.com/thunlp/THUOCL\"\nversion = \"\"\nentries = 16402\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "dicts/places.qj",
+      "bytes": 2082544,
+      "sha256": "cfd05ae5a73c513be9c9efd5c487d6498a171eac364de598d10c09008e7a4a36",
+      "format_version": 1,
+      "kind": 1,
+      "sections": {
+        "META": {
+          "offset": 152,
+          "bytes": 287
+        },
+        "TEXT": {
+          "offset": 440,
+          "bytes": 428640
+        },
+        "KEYS": {
+          "offset": 429080,
+          "bytes": 565760
+        },
+        "INDX": {
+          "offset": 994840,
+          "bytes": 610128
+        },
+        "SLOT": {
+          "offset": 1604968,
+          "bytes": 477576
+        }
+      },
+      "declared_metadata_toml": "name = \"青简领域词库：地名\"\nlicense = \"MIT AND Unicode-3.0\"\nattribution = \"THUOCL（清华大学自然语言处理实验室，MIT）；读音 Unihan（Unicode）\"\nsource = \"https://github.com/thunlp/THUOCL\"\nversion = \"\"\nentries = 39798\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "dicts/poetry_lines.qj",
+      "bytes": 940744,
+      "sha256": "e690fcfafd44276863bcabc4e2a259981079c4f10b76559464e61f12fa36ec28",
+      "format_version": 1,
+      "kind": 1,
+      "sections": {
+        "META": {
+          "offset": 152,
+          "bytes": 293
+        },
+        "TEXT": {
+          "offset": 448,
+          "bytes": 245055
+        },
+        "KEYS": {
+          "offset": 245504,
+          "bytes": 319466
+        },
+        "INDX": {
+          "offset": 564976,
+          "bytes": 214416
+        },
+        "SLOT": {
+          "offset": 779392,
+          "bytes": 161352
+        }
+      },
+      "declared_metadata_toml": "name = \"青简领域词库：诗词名句\"\nlicense = \"MIT AND Unicode-3.0\"\nattribution = \"THUOCL（清华大学自然语言处理实验室，MIT）；读音 Unihan（Unicode）\"\nsource = \"https://github.com/thunlp/THUOCL\"\nversion = \"\"\nentries = 13446\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "glossary-de.qj",
+      "bytes": 6871560,
+      "sha256": "78d89442d5e6812bab2f95c71e47c4bb970f9a3f881360928b5752ace989e0f5",
+      "format_version": 1,
+      "kind": 3,
+      "sections": {
+        "META": {
+          "offset": 152,
+          "bytes": 207
+        },
+        "TEXT": {
+          "offset": 360,
+          "bytes": 2361707
+        },
+        "ENTR": {
+          "offset": 2362072,
+          "bytes": 1100964
+        },
+        "SENS": {
+          "offset": 3463040,
+          "bytes": 2359940
+        },
+        "HASH": {
+          "offset": 5822984,
+          "bytes": 1048576
+        }
+      },
+      "declared_metadata_toml": "name = \"青简释义表（de）\"\nlicense = \"GPL-3.0-or-later\"\nattribution = \"LLM 生成（DeepSeek），qingjian-gloss-gen\"\nsource = \"\"\nversion = \"\"\nentries = 91747\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "glossary-en.qj",
+      "bytes": 15565368,
+      "sha256": "4cc9c587b206d0f12aabb1b85cb21e6ac2a1c8c4932b9af14332bd96e0be012a",
+      "format_version": 1,
+      "kind": 3,
+      "sections": {
+        "META": {
+          "offset": 152,
+          "bytes": 195
+        },
+        "TEXT": {
+          "offset": 352,
+          "bytes": 5839597
+        },
+        "ENTR": {
+          "offset": 5839952,
+          "bytes": 2786556
+        },
+        "SENS": {
+          "offset": 8626512,
+          "bytes": 4841700
+        },
+        "HASH": {
+          "offset": 13468216,
+          "bytes": 2097152
+        }
+      },
+      "declared_metadata_toml": "name = \"青简释义表（en）\"\nlicense = \"MIT\"\nattribution = \"LLM 生成（DeepSeek），qingjian-gloss-gen\"\nsource = \"\"\nversion = \"\"\nentries = 232213\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "glossary-es.qj",
+      "bytes": 13194160,
+      "sha256": "13f5fbda3f1295c5946ddde5e57017f0689f2dd985a951c5bffaf821cb421865",
+      "format_version": 1,
+      "kind": 3,
+      "sections": {
+        "META": {
+          "offset": 152,
+          "bytes": 235
+        },
+        "TEXT": {
+          "offset": 392,
+          "bytes": 4911268
+        },
+        "ENTR": {
+          "offset": 4911664,
+          "bytes": 2319504
+        },
+        "SENS": {
+          "offset": 7231168,
+          "bytes": 3865840
+        },
+        "HASH": {
+          "offset": 11097008,
+          "bytes": 2097152
+        }
+      },
+      "declared_metadata_toml": "name = \"青简释义表（es）\"\nlicense = \"GPL-3.0-or-later\"\nattribution = \"Azure Translator 机器翻译（Tofuzhu，tools/corpus/glossary_es.py）\"\nsource = \"\"\nversion = \"\"\nentries = 193292\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "glossary-ja.qj",
+      "bytes": 21824776,
+      "sha256": "ec41e4983bf46c0366124afb5285dba14f5c1ee425bd55d9a9f5518d93256933",
+      "format_version": 1,
+      "kind": 3,
+      "sections": {
+        "META": {
+          "offset": 152,
+          "bytes": 195
+        },
+        "TEXT": {
+          "offset": 352,
+          "bytes": 11776972
+        },
+        "ENTR": {
+          "offset": 11777328,
+          "bytes": 2977536
+        },
+        "SENS": {
+          "offset": 14754864,
+          "bytes": 4972760
+        },
+        "HASH": {
+          "offset": 19727624,
+          "bytes": 2097152
+        }
+      },
+      "declared_metadata_toml": "name = \"青简释义表（ja）\"\nlicense = \"MIT\"\nattribution = \"LLM 生成（DeepSeek），qingjian-gloss-gen\"\nsource = \"\"\nversion = \"\"\nentries = 248128\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "glossary-vi.qj",
+      "bytes": 7814288,
+      "sha256": "300a9e1f877fdbabb686cc21dde6dc4e603f65f224a0be8f9cd7dc58b0eecbf9",
+      "format_version": 1,
+      "kind": 3,
+      "sections": {
+        "META": {
+          "offset": 152,
+          "bytes": 206
+        },
+        "TEXT": {
+          "offset": 360,
+          "bytes": 2782282
+        },
+        "ENTR": {
+          "offset": 2782648,
+          "bytes": 1099860
+        },
+        "SENS": {
+          "offset": 3882512,
+          "bytes": 2883200
+        },
+        "HASH": {
+          "offset": 6765712,
+          "bytes": 1048576
+        }
+      },
+      "declared_metadata_toml": "name = \"青简释义表（vi）\"\nlicense = \"GPL-3.0-or-later\"\nattribution = \"LLM 生成（gpt-5.5），qingjian-gloss-gen\"\nsource = \"\"\nversion = \"\"\nentries = 91655\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "glossary-zh.qj",
+      "bytes": 2876888,
+      "sha256": "c1280592349e6bff942ede0aee19935f7883a18935ac3b521a78d654516e755e",
+      "format_version": 1,
+      "kind": 3,
+      "sections": {
+        "META": {
+          "offset": 152,
+          "bytes": 194
+        },
+        "TEXT": {
+          "offset": 352,
+          "bytes": 838240
+        },
+        "ENTR": {
+          "offset": 838592,
+          "bytes": 539088
+        },
+        "SENS": {
+          "offset": 1377680,
+          "bytes": 974920
+        },
+        "HASH": {
+          "offset": 2352600,
+          "bytes": 524288
+        }
+      },
+      "declared_metadata_toml": "name = \"青简释义表（zh）\"\nlicense = \"MIT\"\nattribution = \"LLM 生成（DeepSeek），qingjian-gloss-gen\"\nsource = \"\"\nversion = \"\"\nentries = 44924\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "lm.qj",
+      "bytes": 44798744,
+      "sha256": "38e1ae670952700d66cc8565741a6bdec0d8a68948b4800d473d7177ed9060b4",
+      "format_version": 1,
+      "kind": 2,
+      "sections": {
+        "META": {
+          "offset": 176,
+          "bytes": 281
+        },
+        "WORD": {
+          "offset": 464,
+          "bytes": 1162440
+        },
+        "ENTR": {
+          "offset": 1162904,
+          "bytes": 1670088
+        },
+        "HASH": {
+          "offset": 2832992,
+          "bytes": 2097152
+        },
+        "OFFS": {
+          "offset": 4930144,
+          "bytes": 556700
+        },
+        "SUCC": {
+          "offset": 5486848,
+          "bytes": 39311896
+        }
+      },
+      "declared_metadata_toml": "name = \"青简语言模型（中文维基 + LCCC，青简词库分词）\"\nlicense = \"CC-BY-SA-4.0 AND MIT\"\nattribution = \"中文维基百科（CC BY-SA 4.0）；LCCC（清华大学 CoAI，MIT）\"\nsource = \"\"\nversion = \"\"\nentries = 4913987\ngenerator = \"qingjian-dict-convert 0.1.1\"\n"
+    },
+    {
+      "path": "models/hanzhang-tongbian/hanzhang-tongbian-small.qjm",
+      "bytes": 46141208,
+      "sha256": "4eabcb140b1833ac8bc7afb4f71d3a9ad8db0d9c8073c1890ec96644b6bef973",
+      "format_version": 1,
+      "kind": 6,
+      "sections": {
+        "META": {
+          "offset": 128,
+          "bytes": 390
+        },
+        "CONF": {
+          "offset": 520,
+          "bytes": 173
+        },
+        "VOCB": {
+          "offset": 696,
+          "bytes": 57348
+        },
+        "SAFT": {
+          "offset": 58048,
+          "bytes": 46083160
+        }
+      },
+      "declared_metadata_toml": "name = \"含章·通变（Hanzhang Tongbian）\"\nlicense = \"GPL-3.0-or-later\"\nattribution = \"青简训练的带噪拼音转汉字模型；语料：中文维基百科（CC-BY-SA-3.0 / GFDL）、LCCC（MIT）、IndustryCorpus2（Apache-2.0）\"\nsource = \"https://github.com/qingjian-team/qingjian\"\nversion = \"hanzhang-tongbian-small\"\nentries = 23037056\ngenerator = \"qingjian-dict-convert 0.1.1\"\n",
+      "model_config": {
+        "vocab_size": 8180,
+        "n_layer": 8,
+        "n_embd": 448,
+        "n_head": 8,
+        "context": 128,
+        "dropout": 0.0,
+        "tied_embeddings": true,
+        "step": 15000,
+        "preset": "small"
+      },
+      "safetensors_observations": {
+        "tensor_count": 100,
+        "stored_parameter_elements": 23037056,
+        "dtypes": [
+          "F16"
+        ]
+      }
+    },
+    {
+      "path": "models/hanzhang-zhiwei/hanzhang-zhiwei-small.qjm",
+      "bytes": 56044208,
+      "sha256": "83ad55abab750dd04bae93b48430981035d6c530d155db719cf1dccd4c07b0ef",
+      "format_version": 1,
+      "kind": 6,
+      "sections": {
+        "META": {
+          "offset": 128,
+          "bytes": 336
+        },
+        "CONF": {
+          "offset": 464,
+          "bytes": 175
+        },
+        "VOCB": {
+          "offset": 640,
+          "bytes": 133973
+        },
+        "SAFT": {
+          "offset": 134616,
+          "bytes": 55909592
+        }
+      },
+      "declared_metadata_toml": "name = \"含章·知微（Hanzhang Zhiwei）\"\nlicense = \"GPL-3.0-or-later\"\nattribution = \"青简训练的字级语言模型；语料：中文维基百科（CC-BY-SA-4.0）、LCCC（MIT）\"\nsource = \"https://github.com/qingjian-team/qingjian\"\nversion = \"hanzhang-zhiwei-small\"\nentries = 27950272\ngenerator = \"qingjian-dict-convert 0.1.1\"\n",
+      "model_config": {
+        "vocab_size": 19147,
+        "n_layer": 8,
+        "n_embd": 448,
+        "n_head": 8,
+        "context": 128,
+        "dropout": 0.0,
+        "tied_embeddings": true,
+        "step": 155478,
+        "preset": "small"
+      },
+      "safetensors_observations": {
+        "tensor_count": 100,
+        "stored_parameter_elements": 27950272,
+        "dtypes": [
+          "F16"
+        ]
+      }
+    }
+  ]
+}

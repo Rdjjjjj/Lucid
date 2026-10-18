@@ -10,13 +10,14 @@ use objc2::runtime::AnyObject;
 use objc2::{MainThreadOnly, define_class, msg_send, sel};
 use objc2_foundation::{NSObject, NSObjectProtocol, NSPoint, NSRect, NSSize, NSTimer};
 
-use lucid_core::ai::HttpCorrectionService;
 use lucid_core::{CorrectionRequest, Utf16Range};
+use lucid_provider_http::HttpCorrectionService;
 
 use crate::app::settings::Settings;
 use crate::suggestion::SuggestionPanel;
 
 mod accessibility;
+mod wechat_replace;
 
 static ACTIVE_REQUEST: AtomicU64 = AtomicU64::new(0);
 thread_local! {
@@ -34,7 +35,20 @@ static SHARED_SESSION: Mutex<Option<crate::imk::InputSession>> = Mutex::new(None
 #[allow(dead_code)]
 pub fn start_pause_timer() {}
 
+fn current_host_is_wechat() -> bool {
+    CURRENT_HOST_ID.with(|slot| slot.borrow().as_deref() == Some("com.tencent.xinWeChat"))
+}
+
 pub fn request_correction(sentence: String, request_id: u64, host: String) {
+    request_suggestion(sentence, request_id, host, None);
+}
+
+fn request_suggestion(
+    sentence: String,
+    request_id: u64,
+    host: String,
+    translation_english: Option<String>,
+) {
     if crate::imk::is_authentication_host(&host) || crate::imk::secure_input_enabled() {
         reset_active_context();
         SuggestionPanel::hide();
@@ -55,7 +69,16 @@ pub fn request_correction(sentence: String, request_id: u64, host: String) {
         );
         return;
     };
-    SuggestionPanel::show_status("正在改写成英文…");
+    // 微信在显示状态卡片时会触发一次昂贵的辅助功能树查询；等待网络结果期间
+    // 不需要让用户操作这个卡片，最终建议/错误仍会正常显示。
+    let is_wechat = host == "com.tencent.xinWeChat" || current_host_is_wechat();
+    if !is_wechat {
+        SuggestionPanel::show_status(if translation_english.is_some() {
+            "正在获取中文…"
+        } else {
+            "正在改写成英文…"
+        });
+    }
     let service = match HttpCorrectionService::new(configuration, api_key) {
         Ok(service) => service,
         Err(error) => {
@@ -71,7 +94,13 @@ pub fn request_correction(sentence: String, request_id: u64, host: String) {
             Ok(runtime) => runtime,
             Err(_) => return,
         };
-        let result = runtime.block_on(service.correct(&CorrectionRequest::new(sentence.clone())));
+        let result = if let Some(english) = translation_english {
+            runtime
+                .block_on(service.translate_to_chinese(&english))
+                .map(|chinese| lucid_core::CorrectionResult::with_chinese(english, Some(chinese)))
+        } else {
+            runtime.block_on(service.correct(&CorrectionRequest::new(sentence.clone())))
+        };
         if ACTIVE_REQUEST.load(Ordering::SeqCst) != request_id {
             tracing::info!(host = %host, "丢弃过期的改写结果");
             return;
@@ -82,15 +111,13 @@ pub fn request_correction(sentence: String, request_id: u64, host: String) {
                 let rewritten = result.corrected_text.trim().to_owned();
                 if rewritten.is_empty() {
                     SuggestionPanel::show_status("模型没有返回英文句子，原文已保留。");
-                } else if rewritten == sentence {
-                    SuggestionPanel::hide();
                 } else {
                     SuggestionPanel::show_suggestion(&sentence, &rewritten, result.chinese_text);
                 }
             }
             Err(error) => {
                 tracing::error!(host = %host, error = %error, "AI 改写失败");
-                SuggestionPanel::show_status(&format!("改写失败：{error}"));
+                SuggestionPanel::show_error(&format!("改写失败：{error}"), &sentence, &host);
             }
         }
     });
@@ -103,7 +130,6 @@ pub fn replacement_range(original: &str, selected: Option<Utf16Range>) -> Option
 
 /// 丢弃上一个文本框的会话和异步请求，避免把 A 应用里的原文拿去替换 B 应用。
 pub fn reset_active_context() {
-    clear_flip_state();
     ACTIVE_REQUEST.fetch_add(1, Ordering::SeqCst);
     accessibility::take_active_editor();
     if let Ok(mut slot) = SHARED_SESSION.lock() {
@@ -147,11 +173,41 @@ pub fn activate_client(client: &objc2::runtime::AnyObject) {
             .unwrap_or_else(|| "unknown".to_owned())
     };
 
-    let same_host =
-        CURRENT_HOST_ID.with(|slot| slot.borrow().as_deref() == Some(effective_host.as_str()));
+    let effective_pid = objc2_app_kit::NSWorkspace::sharedWorkspace()
+        .runningApplications()
+        .iter()
+        .find(|app| {
+            app.bundleIdentifier()
+                .map(|value| value.to_string())
+                .as_deref()
+                == Some(effective_host.as_str())
+        })
+        .map(|app| app.processIdentifier());
+    let same_host = CURRENT_HOST_ID
+        .with(|slot| slot.borrow().as_deref() == Some(effective_host.as_str()))
+        && CURRENT_HOST_PID.with(|slot| match (*slot.borrow(), effective_pid) {
+            (Some(current), Some(next)) => current == next,
+            _ => true,
+        });
+
     if !same_host {
         reset_active_context();
         SuggestionPanel::hide();
+    } else if effective_host != "com.tencent.xinWeChat"
+        && accessibility::trusted()
+        && let Some(editor) = accessibility::Editor::capture(&effective_host)
+    {
+        // A fresh IMK proxy may represent the same field, so proxy pointer
+        // equality is intentionally not used here. AX elements are stable
+        // across those proxies and distinguish two fields in one application.
+        let switched_field = accessibility::current_active_editor()
+            .is_some_and(|active| !active.same_element(&editor));
+        if switched_field {
+            tracing::info!(host = %effective_host, "同一应用切换输入框，重置 Lucid 会话");
+            reset_active_context();
+            SuggestionPanel::hide();
+        }
+        accessibility::remember_active_editor(editor);
     }
     remember_client(client, None);
 }
@@ -165,10 +221,7 @@ pub fn remember_client(client: &objc2::runtime::AnyObject, range: Option<lucid_c
             .runningApplications()
             .iter()
             .find(|app| {
-                app.bundleIdentifier()
-                    .map(|v| v.to_string())
-                    .as_deref()
-                    == Some(&client_host)
+                app.bundleIdentifier().map(|v| v.to_string()).as_deref() == Some(&client_host)
             })
             .map(|app| app.processIdentifier());
         (client_host, pid)
@@ -197,104 +250,46 @@ pub fn remember_client(client: &objc2::runtime::AnyObject, range: Option<lucid_c
     }
 }
 
-struct FlipToChineseState {
-    english_text: String,
-    chinese_text: String,
-}
-
-static FLIP_STATE: std::sync::Mutex<Option<FlipToChineseState>> = std::sync::Mutex::new(None);
-
-pub fn set_flip_to_chinese_state(
-    english: String,
-    chinese: String,
-) {
-    if let Ok(mut slot) = FLIP_STATE.lock() {
-        tracing::info!(english = %english, chinese = %chinese, "已激活鼠标左键翻转为中文状态");
-        *slot = Some(FlipToChineseState {
-            english_text: english,
-            chinese_text: chinese,
-        });
-    }
-}
-
-pub fn clear_flip_state() {
-    if let Ok(mut slot) = FLIP_STATE.lock() {
-        if slot.is_some() {
-            *slot = None;
-        }
-    }
-}
-
-pub fn trigger_flip_to_chinese() {
-    let state = {
-        let mut slot = match FLIP_STATE.lock() {
-            Ok(guard) => guard,
-            Err(_) => return,
-        };
-        slot.take()
-    };
-    let Some(state) = state else {
-        SuggestionPanel::hide();
-        return;
-    };
-
-    tracing::info!(english = %state.english_text, chinese = %state.chinese_text, "鼠标/触控板点击触发翻转为中文");
-    SuggestionPanel::hide();
-
-    let client = CURRENT_CLIENT.with(|slot| slot.borrow().clone());
-    let Some(client) = client else {
-        tracing::warn!("翻转失败：未找到当前输入框");
-        return;
-    };
-    let text_client = crate::imk::TextClient::new(&client);
-    execute_flip_replacement(&text_client, &state.english_text, &state.chinese_text);
-}
-
-fn execute_flip_replacement(
-    client: &crate::imk::TextClient<'_>,
-    original: &str,
-    replacement: &str,
-) {
-    let host_id = CURRENT_HOST_ID
-        .with(|slot| slot.borrow().clone())
-        .unwrap_or_default();
-    let text_client_host = client.bundle_identifier();
-    let front_id = objc2_app_kit::NSWorkspace::sharedWorkspace()
-        .frontmostApplication()
-        .and_then(|app| app.bundleIdentifier().map(|v| v.to_string()))
-        .unwrap_or_default();
-    let is_wechat = host_id == "com.tencent.xinWeChat"
-        || text_client_host == "com.tencent.xinWeChat"
-        || front_id == "com.tencent.xinWeChat";
-
-    let outcome = if is_wechat {
-        replace_in_wechat(client, original, replacement, None)
-    } else {
-        replace_with_client(client, original, replacement, None)
-    };
-    tracing::info!(?outcome, is_wechat, "鼠标点击翻转为中文替换结果");
-    activate_host();
-}
-
 pub fn apply_current_suggestion() {
     tracing::info!("用户点击使用英文");
-    let Some((original, replacement, chinese)) = SuggestionPanel::take_current() else {
+    let Some((original, replacement, _chinese)) = SuggestionPanel::take_current() else {
         tracing::warn!("点击使用英文时没有可用的建议");
         return;
     };
+    apply_selected_suggestion(original, replacement);
+}
+
+pub fn apply_current_chinese() {
+    let Some((original, english, chinese)) = SuggestionPanel::take_current() else {
+        return;
+    };
+    if let Some(chinese) = chinese.filter(|text| !text.trim().is_empty()) {
+        tracing::info!("用户点击使用中文");
+        apply_selected_suggestion(original, chinese);
+    } else {
+        // 补取译文后重新展示卡片，用户确认前不修改输入框。
+        let host = CURRENT_HOST_ID
+            .with(|slot| slot.borrow().clone())
+            .unwrap_or_default();
+        request_suggestion(original, next_shared_request(), host, Some(english));
+    }
+}
+
+fn apply_selected_suggestion(original: String, replacement: String) {
+    // Stop a second callback from showing the same suggestion again while the
+    // host regains focus. The saved range stays available until the delayed
+    // replacement has verified the focused editor.
+    invalidate_pending_request();
+    SuggestionPanel::hide();
     activate_host();
 
     let range = PENDING_RANGE.lock().ok().and_then(|slot| *slot);
-    let english_for_flip = replacement.clone();
     let _ = DispatchQueue::main().after(DispatchTime::NOW.time(50_000_000), move || {
-        apply_saved_suggestion(original, replacement, range);
-        activate_host();
-        if let Some(chinese) = chinese {
-            set_flip_to_chinese_state(english_for_flip, chinese.clone());
-            SuggestionPanel::show_flip_mode(&chinese);
-        } else {
-            SuggestionPanel::hide();
-        }
+        apply_saved_suggestion(original, replacement, range, move |outcome| {
+            if outcome == lucid_core::ReplacementOutcome::Replaced {
+                activate_host();
+            }
+        });
     });
 }
 
@@ -317,7 +312,8 @@ fn activate_host() {
     }
     // 兜底：如果微信正在运行且当前是微信输入，激活微信
     for app in apps.iter() {
-        if app.bundleIdentifier().map(|v| v.to_string()).as_deref() == Some("com.tencent.xinWeChat") {
+        if app.bundleIdentifier().map(|v| v.to_string()).as_deref() == Some("com.tencent.xinWeChat")
+        {
             #[allow(deprecated)]
             app.activateWithOptions(
                 objc2_app_kit::NSApplicationActivationOptions::ActivateIgnoringOtherApps,
@@ -331,11 +327,13 @@ fn apply_saved_suggestion(
     original: String,
     replacement: String,
     range: Option<lucid_core::Utf16Range>,
+    completion: impl FnOnce(lucid_core::ReplacementOutcome) + 'static,
 ) {
     let client = CURRENT_CLIENT.with(|slot| slot.borrow().clone());
     let Some(client) = client else {
         tracing::warn!("替换失败：没有找到当前输入框");
         SuggestionPanel::show_status("没有找到当前输入框，原文已保留。");
+        completion(lucid_core::ReplacementOutcome::Unsupported);
         return;
     };
     let text_client = crate::imk::TextClient::new(&client);
@@ -350,11 +348,23 @@ fn apply_saved_suggestion(
     let is_wechat = host_id == "com.tencent.xinWeChat"
         || text_client_host == "com.tencent.xinWeChat"
         || front_id == "com.tencent.xinWeChat";
-    let outcome = if is_wechat {
-        replace_in_wechat(&text_client, &original, &replacement, range)
-    } else {
-        replace_with_client(&text_client, &original, &replacement, range)
+    let finish = move |outcome| {
+        finish_saved_suggestion(outcome, is_wechat);
+        completion(outcome);
     };
+    if is_wechat {
+        replace_in_wechat(&text_client, &original, &replacement, range, finish);
+    } else {
+        finish(replace_with_client(
+            &text_client,
+            &original,
+            &replacement,
+            range,
+        ));
+    }
+}
+
+fn finish_saved_suggestion(outcome: lucid_core::ReplacementOutcome, is_wechat: bool) {
     tracing::info!(?outcome, is_wechat, "替换结果");
     match outcome {
         lucid_core::ReplacementOutcome::Replaced => {
@@ -374,6 +384,12 @@ fn apply_saved_suggestion(
             // more useful message with a generic retry prompt.
         }
     }
+    if let Ok(mut slot) = SHARED_SESSION.lock()
+        && let Some(session) = slot.as_mut()
+    {
+        session.clear_pending_suggestion();
+    }
+    remember_range(None);
 }
 
 pub fn keep_original() {
@@ -443,18 +459,21 @@ pub fn suggestion_origin(width: f64, height: f64) -> Option<NSPoint> {
 
     // 2. 结合辅助功能 AX 精准定位（含微信三栏几何净化与右下角输入区推导）
     let caret_rect = imk_caret.or_else(|| {
-        if accessibility::trusted() {
-            let active = accessibility::current_active_editor()
-                .or_else(|| accessibility::Editor::capture(&host));
-            if let Some(editor) = active {
-                editor.visual_anchor_rect(range)
-            } else if is_wechat {
-                accessibility::Editor::capture(&host).and_then(|e| e.visual_anchor_rect(range))
-            } else {
-                None
-            }
-        } else {
+        if !accessibility::trusted() {
+            return None;
+        }
+        // WeChat often does not expose AXFocusedUIElement. Do not start a
+        // second AX tree walk while presenting the card: the IMK text client
+        // has already given us a usable fallback position, and AX messaging
+        // can take seconds in that state. Reuse an editor captured earlier;
+        // only non-WeChat hosts are safe to probe here.
+        let active = accessibility::current_active_editor();
+        if let Some(editor) = active {
+            editor.visual_anchor_rect(range)
+        } else if is_wechat {
             None
+        } else {
+            accessibility::Editor::capture(&host).and_then(|e| e.visual_anchor_rect(range))
         }
     });
 
@@ -511,7 +530,8 @@ fn panel_origin_near_rect(rect: NSRect, width: f64, height: f64) -> NSPoint {
     // 水平位置：卡片左侧对齐正在输入的文字起始位并微偏右（约4px），
     // 紧紧托住输入文字，与用户图1期望效果完全一致。
     let target_x = rect.origin.x + 4.0;
-    let max_x = (visible.origin.x + visible.size.width - width - margin).max(visible.origin.x + margin);
+    let max_x =
+        (visible.origin.x + visible.size.width - width - margin).max(visible.origin.x + margin);
     let x = target_x.clamp(visible.origin.x + margin, max_x);
 
     // 垂直位置：
@@ -544,207 +564,99 @@ fn panel_origin_near_rect(rect: NSRect, width: f64, height: f64) -> NSPoint {
     NSPoint::new(x, y)
 }
 
-#[link(name = "CoreGraphics", kind = "framework")]
-unsafe extern "C" {
-    fn CGEventSourceCreate(state_id: i32) -> *mut std::ffi::c_void;
-    fn CGEventCreateKeyboardEvent(
-        source: *const std::ffi::c_void,
-        virtual_key: u16,
-        key_down: bool,
-    ) -> *mut std::ffi::c_void;
-    fn CGEventSetFlags(event: *mut std::ffi::c_void, flags: u64);
-    fn CGEventPost(tap: u32, event: *mut std::ffi::c_void);
-    #[allow(dead_code)]
-    fn CGEventPostToPid(pid: i32, event: *mut std::ffi::c_void);
-}
-#[link(name = "CoreFoundation", kind = "framework")]
-unsafe extern "C" {
-    fn CFRelease(cf: *const std::ffi::c_void);
-}
-
-const VK_A: u16 = 0;
-const VK_V: u16 = 9;
-const VK_COMMAND: u16 = 55;
-const FLAG_COMMAND: u64 = 1 << 20;
-
-fn post_key_with_command(keycode: u16) {
-    unsafe {
-        let source = CGEventSourceCreate(0 /* CombinedSessionState */);
-
-        // 1. Command 键按下
-        let cmd_down = CGEventCreateKeyboardEvent(source, VK_COMMAND, true);
-        if !cmd_down.is_null() {
-            CGEventSetFlags(cmd_down, FLAG_COMMAND);
-            CGEventPost(0 /* kCGHIDEventTap */, cmd_down);
-            CFRelease(cmd_down.cast());
-        }
-        std::thread::sleep(std::time::Duration::from_millis(15));
-
-        // 2. 目标按键按下（附带 Command 修饰符）
-        let key_down = CGEventCreateKeyboardEvent(source, keycode, true);
-        if !key_down.is_null() {
-            CGEventSetFlags(key_down, FLAG_COMMAND);
-            CGEventPost(0 /* kCGHIDEventTap */, key_down);
-            CFRelease(key_down.cast());
-        }
-        std::thread::sleep(std::time::Duration::from_millis(25));
-
-        // 3. 目标按键抬起（附带 Command 修饰符）
-        let key_up = CGEventCreateKeyboardEvent(source, keycode, false);
-        if !key_up.is_null() {
-            CGEventSetFlags(key_up, FLAG_COMMAND);
-            CGEventPost(0 /* kCGHIDEventTap */, key_up);
-            CFRelease(key_up.cast());
-        }
-        std::thread::sleep(std::time::Duration::from_millis(15));
-
-        // 4. Command 键抬起
-        let cmd_up = CGEventCreateKeyboardEvent(source, VK_COMMAND, false);
-        if !cmd_up.is_null() {
-            CGEventSetFlags(cmd_up, 0);
-            CGEventPost(0 /* kCGHIDEventTap */, cmd_up);
-            CFRelease(cmd_up.cast());
-        }
-        std::thread::sleep(std::time::Duration::from_millis(20));
-
-        if !source.is_null() {
-            CFRelease(source.cast());
-        }
-    }
-}
-
-fn post_select_all() {
-    post_key_with_command(VK_A);
-}
-
-fn post_paste() {
-    post_key_with_command(VK_V);
-}
-
-fn set_pasteboard_string(text: &str) -> Option<String> {
-    unsafe {
-        let pboard: *mut objc2::runtime::AnyObject =
-            msg_send![objc2::class!(NSPasteboard), generalPasteboard];
-        if pboard.is_null() {
-            return None;
-        }
-        let type_string: *mut objc2::runtime::AnyObject =
-            msg_send![objc2::class!(NSString), stringWithUTF8String: c"public.utf8-plain-text".as_ptr()];
-        let old_str: Option<objc2::rc::Retained<objc2_foundation::NSString>> =
-            msg_send![pboard, stringForType: type_string];
-        let old_text = old_str.map(|s| s.to_string());
-
-        let _: () = msg_send![pboard, clearContents];
-        let new_str = objc2_foundation::NSString::from_str(text);
-        let _: bool = msg_send![pboard, setString: &*new_str, forType: type_string];
-        old_text
-    }
-}
-
-fn restore_pasteboard_string(old_text: Option<String>) {
-    if let Some(text) = old_text {
-        unsafe {
-            let pboard: *mut objc2::runtime::AnyObject =
-                msg_send![objc2::class!(NSPasteboard), generalPasteboard];
-            if !pboard.is_null() {
-                let type_string: *mut objc2::runtime::AnyObject =
-                    msg_send![objc2::class!(NSString), stringWithUTF8String: c"public.utf8-plain-text".as_ptr()];
-                let _: () = msg_send![pboard, clearContents];
-                let new_str = objc2_foundation::NSString::from_str(&text);
-                let _: bool = msg_send![pboard, setString: &*new_str, forType: type_string];
-            }
-        }
-    }
-}
-
-/// WeChat's IMK proxy reports a selection but ignores the replacement range
-/// passed to `insertText:replacementRange:`.  Sending the replacement directly
-/// therefore appends `Hello.` after `nihao.`.  Select the matched sentence and
-/// commit over that selection; if the proxy only accepts editing commands,
-/// delete exactly that sentence and insert at the verified caret.
+/// Try native APIs first. Legacy WeChat clients cannot set a selection and
+/// may expose no AX editor; the historical keyboard path runs asynchronously
+/// and verifies the entire selected draft before pasting over it.
 fn replace_in_wechat(
-    _client: &crate::imk::TextClient<'_>,
+    client: &crate::imk::TextClient<'_>,
     original: &str,
     replacement: &str,
     range: Option<lucid_core::Utf16Range>,
-) -> lucid_core::ReplacementOutcome {
-    // 0. 检查辅助功能权限：如果未开启，主动唤起系统权限弹窗并提示用户，绝不强行追加
-    if !accessibility::trusted() {
-        tracing::warn!("微信替换需要辅助功能权限，尝试唤起系统授权");
-        accessibility::check_or_prompt_permission();
-        SuggestionPanel::show_status("微信替换需要辅助功能权限，请在弹出的系统设置中开启。");
-        return lucid_core::ReplacementOutcome::Unsupported;
+    completion: impl FnOnce(lucid_core::ReplacementOutcome) + 'static,
+) {
+    use lucid_core::ReplacementOutcome;
+    let imk_outcome = range.map_or(ReplacementOutcome::Unsupported, |target| {
+        try_replace_by_active_selection(client, original, target, replacement)
+    });
+    if imk_outcome != ReplacementOutcome::Unsupported {
+        completion(imk_outcome);
+        return;
     }
-
-    // 1. 优先复用句末读回时精确捕获的微信输入框进行 AX 原生替换
+    if !accessibility::trusted() {
+        accessibility::check_or_prompt_permission();
+        SuggestionPanel::show_status(
+            "微信替换需要辅助功能权限，请在系统设置中开启 LucidInputMethod。",
+        );
+        completion(ReplacementOutcome::Unsupported);
+        return;
+    }
     let editor = accessibility::take_active_editor()
         .or_else(|| accessibility::Editor::capture("com.tencent.xinWeChat"));
-    if let Some(editor) = editor.as_ref() {
-        let ax_outcome = editor.replace(original, replacement, range);
-        if ax_outcome == lucid_core::ReplacementOutcome::Replaced {
-            return ax_outcome;
-        }
-        tracing::info!(?ax_outcome, "微信 AX 原生写入未完成，转入选区直接覆盖替换流程");
-    }
-
-    // 2. 将翻译文本写入系统剪贴板，并备份旧剪贴板内容
-    let old_clipboard = set_pasteboard_string(replacement);
-
-    // 等待微信窗口焦点完全稳定
-    std::thread::sleep(std::time::Duration::from_millis(50));
-
-    // 3. 直接覆盖（彻底废弃逐字退格，绝不再发生漏删首字母的 bug）：
-    // 分支 A：若拥有捕获的 editor 且有确定有效范围，通过 AX 精确高亮选中原文范围，接着直接粘贴覆盖！
-    let mut covered = false;
-    if let (Some(editor), Some(target_range)) = (editor.as_ref(), range) {
-        if editor.select_range(target_range) {
-            tracing::info!(?target_range, "微信通过 AX 成功精确高亮选中原文范围，直接覆盖粘贴");
-            std::thread::sleep(std::time::Duration::from_millis(30));
-            post_paste();
-            covered = true;
+    if let Some(editor) = editor {
+        let outcome = editor.replace(original, replacement, range);
+        if outcome != ReplacementOutcome::Unsupported {
+            completion(outcome);
+            return;
         }
     }
+    wechat_replace::start(
+        original.to_owned(),
+        replacement.to_owned(),
+        range,
+        completion,
+    );
+}
 
-    // 分支 B：若精确选区未生效，直接全选整个输入框（Cmd+A），接着粘贴覆盖（Cmd+V）！
-    if !covered {
-        tracing::info!(original, "微信执行 Cmd+A 全选直接覆盖粘贴");
-        post_select_all();
-        std::thread::sleep(std::time::Duration::from_millis(30));
-        post_paste();
-    }
+fn utf16_slice(text: &str, range: lucid_core::Utf16Range) -> Option<String> {
+    let units = text.encode_utf16().collect::<Vec<_>>();
+    let end = range.location.checked_add(range.length)?;
+    String::from_utf16(units.get(range.location..end)?).ok()
+}
 
-    // 4. 500ms 后在后台异步将旧剪贴板内容无缝还原，用户完全无感
-    let _ = DispatchQueue::main().after(DispatchTime::NOW.time(500_000_000), move || {
-        restore_pasteboard_string(old_clipboard);
-    });
-
-    tracing::info!(replacement, "微信直接覆盖替换完成");
-    lucid_core::ReplacementOutcome::Replaced
+fn utf16_replace(text: &str, range: lucid_core::Utf16Range, replacement: &str) -> Option<String> {
+    // Reject ranges that split a surrogate pair before constructing the value
+    // we use for post-paste verification.
+    utf16_slice(text, range)?;
+    let units = text.encode_utf16().collect::<Vec<_>>();
+    let end = range.location.checked_add(range.length)?;
+    let mut result = Vec::with_capacity(units.len() + replacement.encode_utf16().count());
+    result.extend_from_slice(units.get(..range.location)?);
+    result.extend(replacement.encode_utf16());
+    result.extend_from_slice(units.get(end..)?);
+    String::from_utf16(&result).ok()
 }
 
 /// Replace a committed range by selecting it in the IMK client and committing
 /// the English at the active selection.  WeChat ignores the explicit
 /// `replacementRange` argument, but its editor selection is still authoritative
 /// when this call is made while the IMK connection is focused.
-#[allow(dead_code)]
 fn try_replace_by_active_selection(
     client: &crate::imk::TextClient<'_>,
+    original: &str,
     target: lucid_core::Utf16Range,
     replacement: &str,
-) -> bool {
+) -> lucid_core::ReplacementOutcome {
     let before = client.substring(target);
     tracing::info!(?target, ?before, "微信尝试活动选区替换");
-    if before.is_none() || !client.set_selected_range(target) {
+    let Some(before) = before else {
+        tracing::info!(?target, "微信活动选区替换失败：无法读取原文");
+        return lucid_core::ReplacementOutcome::Unsupported;
+    };
+    if before != original {
+        tracing::info!(?target, "微信活动选区替换停止：原文范围已变化");
+        return lucid_core::ReplacementOutcome::Stale;
+    }
+    if !client.set_selected_range(target) {
         tracing::info!(?target, "微信活动选区替换失败：无法选中原文");
-        return false;
+        return lucid_core::ReplacementOutcome::Unsupported;
     }
     let Some(selected) = client.selected_range() else {
         tracing::info!(?target, "微信活动选区替换失败：无法读取选区");
-        return false;
+        return lucid_core::ReplacementOutcome::Unverified;
     };
     if selected != target {
         tracing::info!(?target, ?selected, "微信活动选区替换失败：选区未生效");
-        return false;
+        return lucid_core::ReplacementOutcome::Unverified;
     }
 
     client.insert_text(replacement, None);
@@ -762,26 +674,29 @@ fn try_replace_by_active_selection(
         "微信活动选区替换结果"
     );
     if replaced {
-        return true;
+        return lucid_core::ReplacementOutcome::Replaced;
     }
 
-    // If this client appended instead of replacing, remove only the exact copy
-    // that this attempt could have created.  If cleanup cannot be verified, stop
-    // and leave the result explicitly unverified rather than writing again.
+    // 如果宿主把这次写入错误地追加到了句尾，只清理本次调用产生的精确副本。
+    // 清理和原文恢复都无法确认时，直接停止，避免第二次写入扩大破坏范围。
     let appended = lucid_core::Utf16Range::new(target.end(), replacement.encode_utf16().count());
-    if client.substring(appended).as_deref() == Some(replacement) {
-        if client.set_selected_range(appended) && client.selected_range() == Some(appended) {
-            client.insert_text("", None);
-            let restored = client.substring(target).as_deref() == before.as_deref()
-                && client
-                    .substring(appended)
-                    .is_none_or(|text| text != replacement);
-            tracing::info!(?appended, restored, "微信活动选区替换失败后的追加文本清理");
-        }
+    if client.substring(appended).as_deref() == Some(replacement)
+        && client.set_selected_range(appended)
+        && client.selected_range() == Some(appended)
+    {
+        client.insert_text("", None);
     }
-    false
+    let restored = client.substring(target).as_deref() == Some(original)
+        && client
+            .substring(appended)
+            .is_none_or(|text| text != replacement);
+    tracing::info!(?target, restored, "微信活动选区替换失败后的追加文本清理");
+    if restored {
+        lucid_core::ReplacementOutcome::Unsupported
+    } else {
+        lucid_core::ReplacementOutcome::Unverified
+    }
 }
-
 /// Delete the selected original with WeChat's own editing command, then insert
 /// once.  A command that does not move the caret is abandoned immediately so
 /// the original cannot be partially damaged or duplicated.
@@ -965,12 +880,13 @@ pub fn note_inserted(
 ) -> bool {
     // 遇到句末标点（如英文句号、感叹号、问号及中文句末标点）时，优先从输入框读回光标前当前整句。
     // 无论前序文本是用其它输入法输入还是先在别处输入后切回 Lucid，都完整翻译句号前所有内容。
-    let is_terminator = text.chars().any(|character| ".!?。？！".contains(character));
-    if is_terminator
-        && let Some(client) = CURRENT_CLIENT.with(|slot| slot.borrow().clone())
-    {
+    let is_terminator = text
+        .chars()
+        .any(|character| ".!?。？！".contains(character));
+    if is_terminator && let Some(client) = CURRENT_CLIENT.with(|slot| slot.borrow().clone()) {
         let text_client = crate::imk::TextClient::new(&client);
-        if let Some(recovered) = recover_sentence(&text_client, host, selected_before_insert, text) {
+        if let Some(recovered) = recover_sentence(&text_client, host, selected_before_insert, text)
+        {
             let chars = recovered.text.chars().count();
             tracing::info!(host, chars, ?recovered.range, "句末读回完整原文，开始请求英文建议");
             if let Ok(mut slot) = SHARED_SESSION.lock() {
@@ -1031,42 +947,40 @@ struct RecoveredSentence {
     range: lucid_core::Utf16Range,
 }
 
-/// 尝试恢复光标前的完整句子。对于微信优先走经过适配的 AX，对于其他应用优先走 IMK 文本读取。
+/// 尝试恢复光标前的完整句子。所有宿主先走 IMK，只有非微信宿主才在兼容路径中使用 AX。
 fn recover_sentence(
     client: &crate::imk::TextClient<'_>,
     host: &str,
     selected_before_insert: Option<lucid_core::Utf16Range>,
     inserted: &str,
 ) -> Option<RecoveredSentence> {
-    // 微信优先使用 AX 读回完整原文
-    if host == "com.tencent.xinWeChat" {
-        if accessibility::trusted() {
-            if let Some(editor) = accessibility::Editor::capture(host) {
-                let hint_caret = selected_before_insert
-                    .filter(|range| !(range.location == 0 && range.length == 0))
-                    .map(|range| range.location.saturating_add(inserted.encode_utf16().count()));
-                if let Some((text, range)) = editor.recover_sentence(hint_caret) {
-                    tracing::info!(host, chars = text.chars().count(), ?range, "微信 AX 读回完整原文");
-                    accessibility::remember_active_editor(editor);
-                    return Some(RecoveredSentence { text, range });
-                }
-            }
-        }
-    }
-
-    // 标准 NSTextInputClient 路径（支持备忘录 Notes、TextEdit、Safari、Pages 等绝大多数标准应用）
+    // 先走标准 NSTextInputClient 路径。微信在句号提交后经常不提供
+    // AXFocusedUIElement，但它仍能通过 IMK 返回光标前文本；把 AX 查询放
+    // 到后面，避免每个句号都同步等待辅助功能超时。
     if let Some(sentence) = sentence_before_caret(client, selected_before_insert, inserted) {
         return Some(sentence);
     }
 
+    // 微信不在句号按键回调里做 AX 树扫描。AX 查询可能等待应用响应数秒，
+    // 而 Lucid 已经记录了本次通过输入法输入的句子；若 IMK 也读不到完整文本，
+    // 下面会立即回到共享输入会话，保证句号不会被辅助功能查询拖住。
     // 非微信宿主若 IMK substring 无法读取，且拥有 AX 权限，再尝试 AX 捕获
     if host != "com.tencent.xinWeChat" && accessibility::trusted() {
         if let Some(editor) = accessibility::Editor::capture(host) {
             let hint_caret = selected_before_insert
                 .filter(|range| !(range.location == 0 && range.length == 0))
-                .map(|range| range.location.saturating_add(inserted.encode_utf16().count()));
+                .map(|range| {
+                    range
+                        .location
+                        .saturating_add(inserted.encode_utf16().count())
+                });
             if let Some((text, range)) = editor.recover_sentence(hint_caret) {
-                tracing::info!(host, chars = text.chars().count(), ?range, "通用 AX 读回完整原文");
+                tracing::info!(
+                    host,
+                    chars = text.chars().count(),
+                    ?range,
+                    "通用 AX 读回完整原文"
+                );
                 accessibility::remember_active_editor(editor);
                 return Some(RecoveredSentence { text, range });
             }
@@ -1246,7 +1160,8 @@ fn is_sentence_delimiter(units: &[u16], index: usize) -> bool {
         0x002E => {
             // 如果点前后都是数字（例如 3.14），则视为数字小数点，不作为句子分隔符
             let is_prev_digit = index > 0 && (units[index - 1] as u8).is_ascii_digit();
-            let is_next_digit = index + 1 < units.len() && (units[index + 1] as u8).is_ascii_digit();
+            let is_next_digit =
+                index + 1 < units.len() && (units[index + 1] as u8).is_ascii_digit();
             if is_prev_digit && is_next_digit {
                 return false;
             }
@@ -1257,21 +1172,35 @@ fn is_sentence_delimiter(units: &[u16], index: usize) -> bool {
 }
 
 pub fn delete_shared_backward() {
-    clear_flip_state();
+    invalidate_pending_request();
     if let Ok(mut slot) = SHARED_SESSION.lock() {
         slot.get_or_insert_with(crate::imk::InputSession::new)
             .delete_backward();
     }
 }
 
+pub fn retry_current_request() {
+    let Some((sentence, host)) = SuggestionPanel::take_retry() else {
+        return;
+    };
+    invalidate_pending_request();
+    SuggestionPanel::show_status("正在重试…");
+    request_correction(sentence, next_shared_request(), host);
+}
+
 pub fn cancel_suggestion() {
-    clear_flip_state();
-    ACTIVE_REQUEST.fetch_add(1, Ordering::SeqCst);
+    invalidate_pending_request();
+    if let Ok(mut slot) = SHARED_SESSION.lock()
+        && let Some(session) = slot.as_mut()
+    {
+        session.clear_pending_suggestion();
+    }
+    remember_range(None);
     SuggestionPanel::hide();
 }
 
 pub fn reset_shared() {
-    clear_flip_state();
+    invalidate_pending_request();
     if let Ok(mut slot) = SHARED_SESSION.lock() {
         if let Some(session) = slot.as_mut() {
             session.reset();
@@ -1303,7 +1232,14 @@ pub fn flush_shared_pause() {
             .remember_original(&sentence.text, range);
     }
     remember_range(range);
-    request_correction(sentence.text, next_shared_request(), "pause".to_owned());
+    let host = CURRENT_HOST_ID
+        .with(|slot| slot.borrow().clone())
+        .unwrap_or_else(|| "pause".to_owned());
+    request_correction(sentence.text, next_shared_request(), host);
+}
+
+pub fn invalidate_pending_request() {
+    ACTIVE_REQUEST.fetch_add(1, Ordering::SeqCst);
 }
 
 fn remember_range(range: Option<lucid_core::Utf16Range>) {

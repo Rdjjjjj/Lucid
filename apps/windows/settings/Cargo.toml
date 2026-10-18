@@ -1,0 +1,28 @@
+[package]
+name = "lucid-windows-settings"
+description = "Lucid Windows 设置与 TSF 注册程序"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "LucidSettings"
+path = "src/main.rs"
+
+[dependencies]
+lucid-core.workspace = true
+lucid-provider-http.workspace = true
+lucid-platform.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+tokio.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+windows.workspace = true
+windows-core = "0.62.2"
+
+[lints]
+workspace = true
+
