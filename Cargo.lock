@@ -634,7 +634,7 @@ checksum = "4050469837a6ff301cd14c1f8f24f88549e6d548f24f64e2148eb0f72cebc51f"
 
 [[package]]
 name = "lucid-core"
-version = "0.2.12"
+version = "0.1.5"
 dependencies = [
  "serde",
  "serde_json",
@@ -643,7 +643,7 @@ dependencies = [
 
 [[package]]
 name = "lucid-macos"
-version = "0.2.12"
+version = "0.1.5"
 dependencies = [
  "dispatch2",
  "lucid-core",
@@ -664,7 +664,7 @@ dependencies = [
 
 [[package]]
 name = "lucid-platform"
-version = "0.2.12"
+version = "0.1.5"
 dependencies = [
  "lucid-core",
  "serde",
@@ -674,7 +674,7 @@ dependencies = [
 
 [[package]]
 name = "lucid-provider-http"
-version = "0.2.12"
+version = "0.1.5"
 dependencies = [
  "lucid-core",
  "reqwest",
@@ -684,7 +684,7 @@ dependencies = [
 
 [[package]]
 name = "lucid-windows-installer"
-version = "0.2.12"
+version = "0.1.5"
 dependencies = [
  "embed-resource",
  "windows",
@@ -692,7 +692,7 @@ dependencies = [
 
 [[package]]
 name = "lucid-windows-server"
-version = "0.2.12"
+version = "0.1.5"
 dependencies = [
  "lucid-core",
  "lucid-platform",
@@ -708,7 +708,7 @@ dependencies = [
 
 [[package]]
 name = "lucid-windows-settings"
-version = "0.2.12"
+version = "0.1.5"
 dependencies = [
  "lucid-core",
  "lucid-platform",
@@ -723,7 +723,7 @@ dependencies = [
 
 [[package]]
 name = "lucid-windows-tsf"
-version = "0.2.12"
+version = "0.1.5"
 dependencies = [
  "lucid-core",
  "lucid-platform",
