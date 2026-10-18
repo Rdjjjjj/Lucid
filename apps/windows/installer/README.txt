@@ -1,4 +1,4 @@
-Lucid 0.2.11 Windows 安装包
+Lucid 0.2.12 Windows 安装包
 目标：Windows 10/11 x64
 
 安装：
